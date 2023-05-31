@@ -21,7 +21,7 @@ class LoadingMeasurement(Measurement):
 
     for index, url in enumerate(urls):
       browser = browser_class()
-      browser.prepare_profile(self.state.unsafe_use_profiles)
+      browser.prepare_profile()
       domain = urlparse(url).netloc
       result_dir = f'browsertime/{browser.name()}/{index}_{domain}/{iteration}/'
       preURLDelay = 1000 if self.state.low_delays_for_testing else 10000

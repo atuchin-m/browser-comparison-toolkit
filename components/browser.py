@@ -4,6 +4,7 @@
 # You can obtain one at https://mozilla.org/MPL/2.0/.
 
 import os
+import re
 import shutil
 import subprocess
 import time
@@ -32,6 +33,20 @@ class Browser:
 
   def profile_dir(self) -> str:
     raise RuntimeError('Not implemented')
+
+  def get_version(self) -> Optional[str]:
+    if is_win():
+      output = subprocess.check_output(
+        "wmic datafile where name=\"{:s}\" get version"
+          .format(self.binary()
+          .replace('\\','\\\\')),shell=True).decode('utf-8').rstrip()
+      return output.split('\n')[1]
+    if is_mac():
+      output = subprocess.check_output([self.binary(), '--version']).decode('utf-8').rstrip()
+      m = re.match(r'[a-zA-Z\ ]*([\d\.]+\d+)', output)
+      if m is None:
+        return None
+      return m.group(1)
 
   def binary(self) -> str:
     if is_mac():
@@ -84,14 +99,12 @@ class Browser:
     assert self.profile_dir()
     return self.profile_dir()
 
-  def prepare_profile(self, unsafe=False):
+  def prepare_profile(self):
+    if not self.use_user_data_dir:
+      return
+
     target_profile = self._get_target_profile()
     if os.path.exists(target_profile):
-      if not self.use_user_data_dir and unsafe is False:
-        accept = input((f'Have you backup your profile {target_profile}?' +
-                        'Type YES to delete it and continue.'))
-        if accept != 'YES':
-          raise RuntimeError('Aborted by user')
       shutil.rmtree(target_profile)
     if not os.path.exists(self._get_source_profile()):
       raise RuntimeError('Can\'t find source profile')
@@ -104,11 +117,18 @@ class Browser:
                                     stdout=subprocess.PIPE,
                                     stderr=subprocess.PIPE)
 
-  def terminate(self):
-    assert self.process is not None
+  def terminate(self, timeout = 10):
+    if self.process is None:
+      return
     self.process.terminate()
-    time.sleep(1)
-    self.process.kill()
+    time_spend = 0
+    while self.process.poll() is not None and time_spend < timeout:
+      time.sleep(1)
+      time_spend += 1
+
+    if self.process.poll() is not None:
+      logging.info('Killing %s pid %d', self.binary_name, self.process.pid)
+      self.process.kill()
 
   def open_url(self, url: str):
     assert self.process is not None
@@ -127,6 +147,37 @@ class Brave(_Chromium):
   def binary_win(self) -> str:
     return os.path.expandvars(
         R'%ProgramFiles%\BraveSoftware\Brave-Browser\Application\brave.exe')
+
+class BraveBeta(_Chromium):
+  binary_name = 'Brave Browser Beta'
+
+  def binary_win(self) -> str:
+    return os.path.expandvars(
+        R'%ProgramFiles%\BraveSoftware\Brave-Browser-Beta\Application\brave.exe')
+
+class BraveNightly(_Chromium):
+  binary_name = 'Brave Browser Nightly'
+
+  def binary_win(self) -> str:
+    return os.path.expandvars(
+        R'%ProgramFiles%\BraveSoftware\Brave-Browser-Nightly\Application\brave.exe')
+
+
+class DDG(Browser):
+  binary_name = 'DuckDuckGo'
+  use_user_data_dir = False
+
+  def binary_win(self) -> str:
+    return os.path.expandvars(
+        R'%ProgramFiles%\WindowsApps\DuckDuckGo.DesktopBrowser_0.63.3.0_x64__ya2fgkz3nks94\WindowsBrowser\DuckDuckGo.exe')
+
+  def profile_dir(self) -> str:
+    if is_mac():
+      return '~/Library/Containers/com.duckduckgo.macos.browser/Data/Library/Application Support/'
+    raise RuntimeError('Not implemented')
+
+  def get_version(self) -> Optional[str]:
+    return None
 
 
 class Chrome(_Chromium):
@@ -147,8 +198,7 @@ class Opera(_Chromium):
 
   def binary_win(self) -> str:
     return os.path.expandvars(
-        R'%USERPROFILE%\AppData\Local\Programs\Opera\99.0.4788.13_0\opera.exe')
-
+        R'%USERPROFILE%\AppData\Local\Programs\Opera\opera.exe')
 
 class Edge(Browser):
   binary_name = 'Microsoft Edge'
@@ -169,6 +219,13 @@ class Safari(Browser):
       return '~/Library/Safari'
     raise RuntimeError('Not implemented')
 
+  def get_version(self) -> Optional[str]:
+    args = ['/usr/libexec/PlistBuddy',
+            '-c',
+            'print :CFBundleShortVersionString',
+            '/Applications/Safari.app/Contents/Info.plist']
+    return subprocess.check_output(args).decode('utf-8').strip()
+
 
 class Firefox(Browser):
   binary_name = 'Firefox'
@@ -186,14 +243,38 @@ class Firefox(Browser):
   def binary_win(self) -> str:
     return os.path.expandvars(R'%ProgramW6432%\Mozilla Firefox\firefox.exe')
 
+  def terminate(self, timeout = 10):
+    if is_win():
+      subprocess.check_call(['taskkill.exe', '/F', '/IM', 'firefox.exe'])
+    else:
+      super().terminate(timeout)
 
-BROWSER_LIST = [Brave, Chrome, ChromeUBO, Opera, Edge]  # Safari, Firefox]
+  def get_all_child_processes(self) -> List[psutil.Process]:
+    if is_win():
+      processes = []
+      for proc in psutil.process_iter():
+        if proc.name() == 'firefox.exe':
+          processes.append(proc)
+      return processes
+    return super().get_all_child_processes()
 
+#BraveBeta, BraveNightly,
+BROWSER_LIST = [Brave, Chrome, ChromeUBO, Opera, Edge, Firefox]
+if is_mac():
+  BROWSER_LIST.append(Safari)
 
-def get_browsers_classes_by_name(name: str):
+BROWSER_LIST_MAP = {}
+for b in BROWSER_LIST:
+  BROWSER_LIST_MAP[b.name()] = b
+
+def get_browser_classes_from_str(name: str):
   if name == 'all':
     return BROWSER_LIST
-  for b in BROWSER_LIST:
-    if b.name() == name:
-      return [b]
-  raise RuntimeError(f'No browser with name {name} found')
+  result: List[Browser] = []
+  for b in name.split(','):
+    cls = BROWSER_LIST_MAP.get(b)
+    if cls is None:
+      raise RuntimeError(f'No browser with name {b} found')
+    result.append(cls)
+
+  return result

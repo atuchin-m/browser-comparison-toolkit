@@ -15,7 +15,10 @@ async function perfTest(context, commands) {
         console.error(raw)
       }
       console.log('got total', m[1], m[2])
-      commands.measure.addObject({ 'kraken_ms': parseFloat(m[1]) });
+      commands.measure.addObject({
+        'kraken_ms': parseFloat(m[1]),
+        'kraken_error%': parseFloat(m[2])
+      });
       break;
     }
   }

@@ -7,10 +7,8 @@ from typing import List, Optional, Tuple, Type
 
 from components.browser import Browser
 
-
 class MeasurementState:
   urls: List[str]
-  unsafe_use_profiles = False
   low_delays_for_testing = False
 
 

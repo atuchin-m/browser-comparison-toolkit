@@ -8,7 +8,7 @@ async function perfTest(context, commands) {
       "return document.getElementsByClassName('overall-score')[1]?.textContent")
     if (value && value != '') {
       console.log('got result', value)
-      commands.measure.addObject({ 'basemark_score': parseFloat(value) });
+      commands.measure.addObject({ 'basemark': parseFloat(value) });
       break;
     }
   }
