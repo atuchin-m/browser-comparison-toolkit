@@ -1,7 +1,6 @@
 
 .DS_Store
 *.tar.gz
-./*.csv
 browser_profiles/
 browsertime/
 browsertime-results/
