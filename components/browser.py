@@ -182,6 +182,12 @@ class DDG(Browser):
   def get_version(self) -> Optional[str]:
     return None
 
+  def open_url(self, url: str):
+    if is_mac():
+      rv = subprocess.check_call(['open', '-a', 'DuckDuckGo', url], stdout=subprocess.PIPE)
+    else:
+      super().open_url(url)
+
 
 class Chrome(_Chromium):
   binary_name = 'Google Chrome'
@@ -248,7 +254,7 @@ class Firefox(Browser):
 
   def terminate(self, timeout = 10):
     if is_win():
-      subprocess.check_call(['taskkill.exe', '/F', '/IM', 'firefox.exe'])
+      subprocess.call(['taskkill.exe', '/IM', 'firefox.exe'])
     else:
       super().terminate(timeout)
 
