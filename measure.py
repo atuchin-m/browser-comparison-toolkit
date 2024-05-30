@@ -77,7 +77,7 @@ def main():
         good_iteration_count += 1
       except Exception as e:
         failed_iteration_count += 1
-        if failed_iteration_count <= args.retry_count:
+        if args.retry_count is not None and failed_iteration_count <= args.retry_count:
           logging.error('Got error %s, retrying', e)
         else:
           final_messages.append(

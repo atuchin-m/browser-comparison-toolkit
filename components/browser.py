@@ -128,7 +128,10 @@ class Browser:
 
     if self.process.poll() is not None:
       logging.info('Killing %s pid %d', self.binary_name, self.process.pid)
-      self.process.kill()
+      try:
+        self.process.kill()
+      finally:
+        pass
 
   def open_url(self, url: str):
     assert self.process is not None
