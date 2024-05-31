@@ -65,5 +65,9 @@ def run_browsertime(browser: Browser, cmd: str, result_dir: str,
 def get_total_transfer_bytes(har_json: Dict) -> int:
   total_bytes = 0
   for e in har_json['log']['entries']:
-    total_bytes += e['response']['_transferSize']
+    res = e['response']
+    if hasattr(res, '_transferSize'):
+      total_bytes += e['response']['_transferSize']
+    else:
+      total_bytes += res['headersSize'] + res['bodySize']
   return total_bytes
