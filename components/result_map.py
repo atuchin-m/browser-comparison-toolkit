@@ -29,6 +29,11 @@ class ResultMap():
 
   # Calculate *_Total metrics
   def calc_total_metrics(self):
+    # Clear the old entries
+    for (metric, key, browser, version), _ in self._map.items():
+      if metric.endswith('_Total'):
+        del self._map[(metric, key, browser, version)]
+
     for (metric, key, browser, version), values in self._map.items():
       if key is None:
         continue

@@ -88,8 +88,7 @@ def main():
           final_messages.append(
             f'{test_name}/{browser_name}/{good_iteration_count} failed')
           raise
-
-    results.write_csv(header, args.output)
+      results.write_csv(header, args.output)
 
     for msg in final_messages:
       logging.error(msg)
