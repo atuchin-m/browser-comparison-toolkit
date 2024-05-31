@@ -13,7 +13,7 @@ import platform
 import psutil
 
 from tempfile import TemporaryDirectory
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 from components.utils import is_mac, is_win
 
@@ -280,18 +280,18 @@ class Firefox(Browser):
     return super().get_all_child_processes()
 
 #BraveBeta, BraveNightly,
-BROWSER_LIST = [Brave, Chrome, ChromeUBO, Opera, Edge, Firefox, DDG]
+BROWSER_LIST: list[type[Browser]] = [Brave, Chrome, ChromeUBO, Opera, Edge, Firefox, DDG]
 if is_mac():
   BROWSER_LIST.append(Safari)
 
-BROWSER_LIST_MAP = {}
+BROWSER_LIST_MAP: Dict[str, type[Browser]] = {}
 for b in BROWSER_LIST:
   BROWSER_LIST_MAP[b.name()] = b
 
-def get_browser_classes_from_str(name: str):
+def get_browser_classes_from_str(name: str) -> list[type[Browser]]:
   if name == 'all':
     return BROWSER_LIST
-  result: List[Browser] = []
+  result: List[type[Browser]] = []
   for b in name.split(','):
     cls = BROWSER_LIST_MAP.get(b)
     if cls is None:
