@@ -28,6 +28,7 @@ def run_browsertime(browser: Browser, cmd: str, result_dir: str,
   args = ([npm_binary, 'exec', 'browsertime', '--'] +
           ['-b', browser.browsertime_binary] + ['-n', '1'] +
           ['--useSameDir', '--resultDir', f'{result_dir}'] +
+          ['--browserRestartTries', '0'] +
           ['--viewPort', 'maximize'] + ['--preURL', 'about:blank'] +
           [f'--{browser.browsertime_binary}.binaryPath',
            browser.binary()])

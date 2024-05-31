@@ -6,7 +6,7 @@
 
 import argparse
 import logging
-from typing import List
+from typing import Dict, List
 
 from components.browser import get_browser_classes_from_str
 from components.measurement import MeasurementState
@@ -67,31 +67,40 @@ def main():
   results = ResultMap()
   final_messages: List[str] = []
 
+  versions: Dict[str, str] = {}
+
   for browser_class in browser_classes:
-    browser_name = browser_class().name()
-    browser_version = browser_class().get_version()
-    logging.info('Testing %s %s', browser_name, browser_version)
-    failed_iteration_count = 0
-    good_iteration_count = 0
-    while good_iteration_count < repeat:
-      try:
-        metrics = measure.Run(good_iteration_count, browser_class)
-        logging.debug([test_name, browser_name, browser_version, metrics])
-        for metric, key, value in metrics:
-          results.addValue(browser_name, browser_version, metric, key, value)
-        good_iteration_count += 1
-      except Exception as e:
-        failed_iteration_count += 1
-        if args.retry_count is not None and failed_iteration_count <= args.retry_count:
-          logging.error('Got error %s, retrying', e)
-        else:
-          final_messages.append(
-            f'{test_name}/{browser_name}/{good_iteration_count} failed')
-          raise
+      browser = browser_class()
+      version = browser.get_version()
+      if version is None:
+        version = "unknown"
+      versions[browser.name()] = version
+
+  for index in range(args.repeat):
+    for browser_class in browser_classes:
+      browser_name = browser_class().name()
+      version = versions[browser_name]
+      logging.info('Testing %d/%s/%s', index, browser_name, version)
+      attempt = 0
+      while True:
+        try:
+          metrics = measure.Run(index, browser_class)
+          logging.debug([test_name, browser_name, version, metrics])
+          for metric, key, value in metrics:
+            results.addValue(browser_name, version, metric, key, value)
+          break
+        except Exception as e:
+          attempt += 1
+          if args.retry_count is not None and attempt <= args.retry_count:
+            logging.error('Got error %s, retrying', e)
+            final_messages.append(
+              f'{test_name}/{browser_name}/{index} failed')
+          else:
+            raise
       results.write_csv(header, args.output)
 
-    for msg in final_messages:
-      logging.error(msg)
+  for msg in final_messages:
+    logging.error(msg)
 
 
 main()
