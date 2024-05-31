@@ -34,6 +34,7 @@ def run_browsertime(browser: Browser, cmd: str, result_dir: str,
            browser.binary()])
   args.extend(extra_args)
   args.append('--chrome.noDefaultOptions')
+  args.append('--firefox.noDefaultOptions')
   for arg in browser.get_args() + DEFAULT_CHROME_OPTIONS:
     assert arg.startswith('--')
     args.extend(['--chrome.args', arg[2:]])
