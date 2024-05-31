@@ -118,9 +118,21 @@ class Browser:
                                     stderr=subprocess.PIPE)
 
   def terminate(self, timeout = 10):
+    self.do_terminate(timeout)
+    try:
+      if self.temp_user_data_dir is not None:
+        self.temp_user_data_dir.cleanup()
+    except:
+      pass
+
+  def do_terminate(self, timeout):
     if self.process is None:
       return
-    self.process.terminate()
+    try:
+      self.process.terminate()
+    except:
+      pass
+
     time_spend = 0
     while self.process.poll() is not None and time_spend < timeout:
       time.sleep(1)
@@ -252,11 +264,11 @@ class Firefox(Browser):
   def binary_win(self) -> str:
     return os.path.expandvars(R'%ProgramW6432%\Mozilla Firefox\firefox.exe')
 
-  def terminate(self, timeout = 10):
+  def do_terminate(self, timeout):
     if is_win():
       subprocess.call(['taskkill.exe', '/IM', 'firefox.exe'])
     else:
-      super().terminate(timeout)
+      super().do_terminate(timeout)
 
   def get_all_child_processes(self) -> List[psutil.Process]:
     if is_win():
