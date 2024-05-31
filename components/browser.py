@@ -62,6 +62,9 @@ class Browser:
   def binary_win(self) -> str:
     raise RuntimeError('Not implemented')
 
+  def extra_process(self) -> List[str]:
+    return []
+
   def get_start_cmd(self, use_source_profile=False) -> List[str]:
     return [self.binary()] + self.get_args(use_source_profile)
 
@@ -75,15 +78,6 @@ class Browser:
 
     args.extend(self.args)
     return args
-
-  def get_all_child_processes(self) -> List[psutil.Process]:
-    assert self.process is not None
-    main_process = psutil.Process(self.process.pid)
-    processes = []
-    children = main_process.children(recursive=True)
-    for child in children:
-      processes.append(child)
-    return processes
 
   def _get_source_profile(self) -> str:
     profile = os.path.join(os.curdir, 'browser_profiles', platform.system(),
@@ -194,6 +188,9 @@ class DDG(Browser):
   def get_version(self) -> Optional[str]:
     return None
 
+  def extra_process(self) -> List[str]:
+    return ['DuckDuckGo', 'com.apple.WebKit']
+
   def open_url(self, url: str):
     if is_mac():
       rv = subprocess.check_call(['open', '-a', 'DuckDuckGo', url], stdout=subprocess.PIPE)
@@ -270,14 +267,11 @@ class Firefox(Browser):
     else:
       super().do_terminate(timeout)
 
-  def get_all_child_processes(self) -> List[psutil.Process]:
+  def extra_process(self) -> List[str]:
     if is_win():
-      processes = []
-      for proc in psutil.process_iter():
-        if proc.name() == 'firefox.exe':
-          processes.append(proc)
-      return processes
-    return super().get_all_child_processes()
+      return ['firefox', 'Firefox', 'plugin-container']
+    return super().extra_process()
+
 
 SUPPORTED_BROWSER_LIST: List[Type[Browser]] = [Brave, BraveBeta, BraveNightly, Chrome, ChromeUBO, Opera, Edge, Firefox, DDG]
 DEFAULT_BROWSER_LIST: List[Type[Browser]] = [Brave, Chrome, ChromeUBO, Opera, Edge, Firefox]

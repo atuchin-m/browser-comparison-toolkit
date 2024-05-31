@@ -34,11 +34,11 @@ class ResultMap():
       if metric.endswith('_Total'):
         del self._map[(metric, key, browser, version)]
 
-    for (metric, key, browser, version), values in self._map.items():
+    for (metric, key, browser, version), values in list(self._map.items()):
       if key is None:
         continue
-      index = (total_metric_name, None, browser, version)
       total_metric_name = f'{metric}_Total'
+      index = (total_metric_name, None, browser, version)
       self._map.setdefault(index, [])
       total_values = self._map.get(index)
       assert total_values is not None
