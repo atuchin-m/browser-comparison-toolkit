@@ -54,6 +54,11 @@ def main():
   log_format = '%(asctime)s: %(message)s'
   logging.basicConfig(level=log_level, format=log_format)
 
+  header = None
+  if args.append:
+    with open(args.output, 'r', newline='', encoding='utf-8') as result_file:
+      header = result_file.read()
+
   measure = get_measure_by_args(args)
   test_name: str = args.urls_file.name
   repeat: int = args.repeat
@@ -84,7 +89,8 @@ def main():
             f'{test_name}/{browser_name}/{good_iteration_count} failed')
           raise
 
-    results.write_csv(args.output, args.append)
+    results.write_csv(header, args.output)
+
     for msg in final_messages:
       logging.error(msg)
 

@@ -39,17 +39,18 @@ class ResultMap():
       assert total_values is not None
       total_values.extend(values)
 
-  def write_csv(self, output_file: str, append: bool):
+  def write_csv(self, header: Optional[str], output_file: str):
     self.calc_total_metrics()
-    mode = 'a' if append else 'w'
-    with open(output_file, mode, newline='', encoding='utf-8') as result_file:
+    with open(output_file, 'w', newline='', encoding='utf-8') as result_file:
       result_writer = csv.writer(result_file,
                                  delimiter=',',
                                  quotechar='"',
                                  quoting=csv.QUOTE_NONNUMERIC)
-      if not append:
+      if header is None:
         result_writer.writerow(['metric', 'browser', 'version'] +
                               ['avg', 'stdev', 'stdev%', '', 'raw_values..'])
+      else:
+        result_file.write(header)
       for (metric, key, browser, version), values in self._map.items():
         metric_str = metric + '_' + key if key is not None else metric
         error = self._error.get((metric, key, browser, version))
@@ -61,5 +62,3 @@ class ResultMap():
         rstdev = stdev / avg if avg > 0 else 0
         result_writer.writerow([metric_str, browser, version] +
                                 [avg, stdev, rstdev] + [''] + values)
-    self._map = {}
-    self._error = {}

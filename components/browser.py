@@ -280,7 +280,7 @@ class Firefox(Browser):
     return super().get_all_child_processes()
 
 #BraveBeta, BraveNightly,
-BROWSER_LIST = [Brave, Chrome, ChromeUBO, Opera, Edge, Firefox]
+BROWSER_LIST = [Brave, Chrome, ChromeUBO, Opera, Edge, Firefox, DDG]
 if is_mac():
   BROWSER_LIST.append(Safari)
 
