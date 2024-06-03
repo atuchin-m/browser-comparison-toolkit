@@ -6,8 +6,7 @@
 from typing import List, Optional, Tuple, Type
 from urllib.parse import urlparse
 
-from components.browsertime_utils import (run_browsertime,
-                                          get_total_transfer_bytes)
+from components.browsertime_utils import run_browsertime
 from components.browser import Browser
 from components.measurement import Measurement
 
@@ -25,16 +24,10 @@ class LoadingMeasurement(Measurement):
       domain = urlparse(url).netloc
       result_dir = f'browsertime/{browser.name()}/{index}_{domain}/{iteration}/'
       preURLDelay = 1000 if self.state.low_delays_for_testing else 10000
-      output, har = run_browsertime(
+      res = run_browsertime(
           browser, url, result_dir,
           ['--preURLDelay', str(preURLDelay)])
 
-      timings = output['statistics']['timings']
-      results.append(('fullyLoaded', domain, timings['fullyLoaded']['mean']))
-      results.append(('largestContentfulPaint', domain,
-                      timings['largestContentfulPaint']['loadTime']['mean']))
-      results.append(('loadEventEnd', domain, timings['loadEventEnd']['mean']))
-
-      results.append(('totalBytes', domain, get_total_transfer_bytes(har)))
+      results.extend(res)
 
     return results

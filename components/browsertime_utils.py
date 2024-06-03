@@ -9,6 +9,7 @@ import logging
 import subprocess
 
 from typing import Dict, List, Optional, Tuple
+from urllib.parse import urlparse
 
 from components.browser import Browser
 from components.utils import is_win
@@ -22,8 +23,18 @@ DEFAULT_CHROME_OPTIONS = [
   '--disable-features=CalculateNativeWinOcclusion',
   '--remote-debugging-port=9222']
 
+
+def _get_total_transfer_bytes(har: Dict) -> int:
+  total_bytes = 0
+  for e in har['log']['entries']:
+    res = e['response']
+    if hasattr(res, '_transferSize'):
+      total_bytes += e['response']['_transferSize']
+  return total_bytes
+
+
 def run_browsertime(browser: Browser, cmd: str, result_dir: str,
-                    extra_args: List[str]) -> Tuple[Dict, Optional[Dict]]:
+                    extra_args: List[str]) -> List[Tuple[str, Optional[str], float]]:
   npm_binary = 'npm.cmd' if is_win() else 'npm'
   args = ([npm_binary, 'exec', 'browsertime', '--'] +
           ['-b', browser.browsertime_binary] + ['-n', '1'] +
@@ -35,22 +46,19 @@ def run_browsertime(browser: Browser, cmd: str, result_dir: str,
   args.extend(extra_args)
   args.append('--chrome.noDefaultOptions')
   args.append('--firefox.noDefaultOptions')
+  args.append('--firefox.disableBrowsertimeExtension')
   for arg in browser.get_args() + DEFAULT_CHROME_OPTIONS:
     assert arg.startswith('--')
     args.extend(['--chrome.args', arg[2:]])
-
-  # for arg in DEFAULT_CHROME_OPTIONS:
-  #   args.extend(['--chrome.args', arg[2:]])
-  # TODO: support --chrome.noDefaultOptions?
-  # args.extend(['--chrome.args', 'remote-debugging-port=9222'])
-  # args.extend(['--chrome.args', 'test-type=webdriver'])
 
   args.append(cmd)
   logging.debug(args)
   subprocess.check_call(args)
   output_file = os.path.join(result_dir, 'browsertime.json')
   with open(output_file, 'r', encoding='utf-8') as output:
-    output_json = json.load(output)[0]
+    output_json = json.load(output)
+
+  results: List[Tuple[str, Optional[str], float]] = []
 
   har_json = None
   try:
@@ -59,15 +67,27 @@ def run_browsertime(browser: Browser, cmd: str, result_dir: str,
       har_json = json.load(har)
   except FileNotFoundError:
     pass
-  return output_json, har_json
 
+  for item in output_json:
+    url = item['info']['url']
+    domain = urlparse(url).netloc
+    print(output)
+    timings = item['statistics']['timings']
+    # results.append(('fullyLoaded', domain, timings['fullyLoaded']['mean']))
+    results.append(('firstPaint', domain,
+                    timings['firstPaint']['mean']))
+    # results.append(('largestContentfulPaint', domain,
+    #                 timings['largestContentfulPaint']['renderTime']['mean']))
+    results.append(('domContentLoadedTime', domain, timings['pageTimings']['domContentLoadedTime']['mean']))
+    results.append(('pageLoadTime', domain, timings['pageTimings']['pageLoadTime']['mean']))
 
-def get_total_transfer_bytes(har_json: Dict) -> int:
-  total_bytes = 0
-  for e in har_json['log']['entries']:
-    res = e['response']
-    if hasattr(res, '_transferSize'):
-      total_bytes += e['response']['_transferSize']
-    else:
-      total_bytes += res['headersSize'] + res['bodySize']
-  return total_bytes
+    for extra in item['extras']:
+      for metric, value in extra.items():
+        if isinstance(value, list):
+          for v in value:
+            results.append((metric, None, v))
+        else:
+          results.append((metric, None, float(value)))
+  if har_json:
+    results.append(('totalBytes', None, _get_total_transfer_bytes(har_json)))
+  return results

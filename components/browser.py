@@ -243,6 +243,9 @@ class Safari(Browser):
       return '~/Library/Safari'
     raise RuntimeError('Not implemented')
 
+  def extra_process(self) -> List[str]:
+    return ['Safari', 'com.apple.WebKit']
+
   def get_version(self) -> Optional[str]:
     args = ['/usr/libexec/PlistBuddy',
             '-c',
@@ -274,9 +277,7 @@ class Firefox(Browser):
       super().do_terminate(timeout)
 
   def extra_process(self) -> List[str]:
-    if is_win():
-      return ['firefox', 'Firefox', 'plugin-container']
-    return super().extra_process()
+    return ['firefox', 'Firefox', 'plugin-container']
 
 
 SUPPORTED_BROWSER_LIST: List[Type[Browser]] = [Brave, BraveBeta, BraveNightly, Chrome, ChromeUBO, Opera, Edge, Firefox, DDG]

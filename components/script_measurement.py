@@ -27,7 +27,7 @@ class ScriptMeasurement(Measurement):
       result_dir = f'browsertime/{browser.name()}/{index}_{name}/{iteration}/'
       preURLDelay = 1000 if self.state.low_delays_for_testing else 10000
 
-      output, _ = run_browsertime(browser, script, result_dir, [
+      res = run_browsertime(browser, script, result_dir, [
           '--preURLDelay',
           str(preURLDelay),
           '--timeouts.script',
@@ -35,12 +35,7 @@ class ScriptMeasurement(Measurement):
       ])
       # browsertime/Chrome/0_speedometer2.js/0/screenshots/1
 
-      js_metrics = output['extras'][0]
-      for metric, value in js_metrics.items():
-        if isinstance(value, list):
-          for v in value:
-            results.append((metric, None, v))
-        else:
-          results.append((metric, None, float(value)))
+
+      results.extend(res)
 
     return results
