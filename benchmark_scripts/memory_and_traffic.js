@@ -1,7 +1,7 @@
 
 const utils = require('./utils.js')
 const fs = require('fs');
-const URLS = fs.readFileSync('./scenarios/old-set-3.txt').toString().split("\n");
+const URLS = fs.readFileSync('./scenarios/old-set.txt').toString().split("\n");
 
 async function perfTest(context, commands) {
   console.log(URLS)
