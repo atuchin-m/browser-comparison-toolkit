@@ -34,8 +34,6 @@ class MemoryMeasurement(Measurement):
     metrics = []
     try:
       browser.prepare_profile()
-      browser.start()
-      time.sleep(self.start_delay)
       for url in self.state.urls:
         browser.open_url(url)
         time.sleep(self.open_url_delay)

@@ -29,7 +29,7 @@ def run_browsertime(browser: Browser, cmd: str, result_dir: str,
           ['-b', browser.browsertime_binary] + ['-n', '1'] +
           ['--useSameDir', '--resultDir', f'{result_dir}'] +
           ['--browserRestartTries', '0'] +
-          ['--viewPort', 'maximize'] + ['--preURL', 'about:blank'] +
+          ['--viewPort', 'maximize'] +
           [f'--{browser.browsertime_binary}.binaryPath',
            browser.binary()])
   args.extend(extra_args)

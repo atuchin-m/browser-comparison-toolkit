@@ -140,7 +140,10 @@ class Browser:
         pass
 
   def open_url(self, url: str):
-    assert self.process is not None
+    if self.process is None:
+      self.process = subprocess.Popen(self.get_start_cmd() + [url], stdout=subprocess.PIPE)
+      return
+
     rv = subprocess.call(self.get_start_cmd() + [url], stdout=subprocess.PIPE)
     if self.name() != 'Opera':
       assert rv == 0
@@ -193,6 +196,9 @@ class DDG(Browser):
 
   def open_url(self, url: str):
     if is_mac():
+      if self.process is None:
+        self.process = subprocess.Popen(self.get_start_cmd() + [url], stdout=subprocess.PIPE)
+        return
       rv = subprocess.check_call(['open', '-a', 'DuckDuckGo', url], stdout=subprocess.PIPE)
     else:
       super().open_url(url)

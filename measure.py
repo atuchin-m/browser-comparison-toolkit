@@ -80,7 +80,7 @@ def main():
     for browser_class in browser_classes:
       browser_name = browser_class().name()
       version = versions[browser_name]
-      logging.info('Testing %d/%s/%s', index, browser_name, version)
+      logging.info('Testing %d/%s-%s', index, browser_name, version)
       attempt = 0
       while True:
         try:
