@@ -11,7 +11,7 @@ from typing import Dict, List
 from components.browser import get_browser_classes_from_str
 from components.measurement import MeasurementState
 from components.result_map import ResultMap
-from components.benchmark_measurement import BenchmarkMeasurement
+from components.script_measurement import ScriptMeasurement
 from components.loading_measurement import LoadingMeasurement
 from components.memory_measurement import MemoryMeasurement
 
@@ -25,13 +25,13 @@ def get_measure_by_args(args):
     return MemoryMeasurement(state)
   if args.measure == 'loading':
     return LoadingMeasurement(state)
-  if args.measure == 'benchmarks':
-    return BenchmarkMeasurement(state)
+  if args.measure == 'script':
+    return ScriptMeasurement(state)
   raise RuntimeError(f'No measurement {args.measure} found')
 
 def main():
   parser = argparse.ArgumentParser()
-  parser.add_argument('measure', type=str)
+  parser.add_argument('measure', type=str, choices=['memory', 'loading', 'script'])
   parser.add_argument('browser', type=str)
   parser.add_argument('urls_file',
                       type=argparse.FileType('r', encoding='utf-8'),

@@ -12,7 +12,7 @@ from components.browser import Browser
 from components.measurement import Measurement
 
 
-class BenchmarkMeasurement(Measurement):
+class ScriptMeasurement(Measurement):
   def Run(
       self, iteration: int,
       browser_class: Type[Browser]) -> List[Tuple[str, Optional[str], float]]:
