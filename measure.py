@@ -42,7 +42,7 @@ def main():
   parser.add_argument('--low-delays-for-testing', action='store_true')
   parser.add_argument('--output', type=str, default='results.csv')
   parser.add_argument('--append', action='store_true')
-  parser.add_argument('--retry-count', type=int)
+  parser.add_argument('--retry-count', type=int, default=2)
   parser.add_argument('-d', '--debug', action='store_true')
 
   args = parser.parse_args()
