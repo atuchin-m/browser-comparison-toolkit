@@ -27,7 +27,7 @@ class ScriptMeasurement(Measurement):
       result_dir = f'browsertime/{browser.name()}/{index}_{name}/{iteration}/'
       preURLDelay = 1000 if self.state.low_delays_for_testing else 10000
 
-      res = run_browsertime(browser, script, result_dir, [
+      res = run_browsertime(browser, script, result_dir, false, [
           '--preURLDelay',
           str(preURLDelay),
           '--timeouts.script',

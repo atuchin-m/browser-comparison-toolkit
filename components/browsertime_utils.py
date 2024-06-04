@@ -33,7 +33,7 @@ def _get_total_transfer_bytes(har: Dict) -> int:
   return total_bytes
 
 
-def run_browsertime(browser: Browser, cmd: str, result_dir: str,
+def run_browsertime(browser: Browser, cmd: str, result_dir: str, wait_for_load: bool,
                     extra_args: List[str]) -> List[Tuple[str, Optional[str], float]]:
   npm_binary = 'npm.cmd' if is_win() else 'npm'
   args = ([npm_binary, 'exec', 'browsertime', '--'] +
@@ -43,6 +43,10 @@ def run_browsertime(browser: Browser, cmd: str, result_dir: str,
           ['--viewPort', 'maximize'] +
           [f'--{browser.browsertime_binary}.binaryPath',
            browser.binary()])
+  if not wait_for_load:
+    args.extend(['--pageCompleteCheck', 'return true'])
+    args.extend(['--pageCompleteCheckStartWait', '15000'])
+
   args.extend(extra_args)
   args.append('--chrome.noDefaultOptions')
   args.append('--firefox.noDefaultOptions')
