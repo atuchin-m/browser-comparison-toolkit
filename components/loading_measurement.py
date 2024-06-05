@@ -19,6 +19,11 @@ class LoadingMeasurement(Measurement):
     results: List[Tuple[str, Optional[str], float]] = []
 
     for index, url in enumerate(urls):
+      if url.startswith('#') or url.startswith('/'):
+        continue
+      if url == '':
+        break
+
       browser = browser_class()
       if browser.browsertime_binary is None:
         continue

@@ -1,15 +1,12 @@
 https://www.tmz.com/2024/06/04/dancing-for-the-devil-miranda-derrick-statement-addresses-cult-documentary/
-# Disabled because of DDOS protection:
+# DDOS protection:
 # https://www.reuters.com/world/india/indias-modi-allies-meet-after-humbling-election-verdict-2024-06-05/
 https://www.vice.com/en/article/g5yn8x/trump-is-inching-closer-to-the-worst-legal-defeat-of-his-life
 https://www.eurosport.com/football/euro/2024/kylian-mbappe-only-felt-unhappy-at-psg-because-of-certain-people-luis-enrique-and-luis-campos-saved-me_sto20008995/story.shtml
 https://www.salon.com/2024/06/03/viggo-mortensen-dont-hurt/
-# firefox issues
-# https://www.buzzfeed.com/gabrielamanjarrez/home-products-that-will-genuinely-impress-guests-when-they?origin=fil-ho
+https://www.buzzfeed.com/gabrielamanjarrez/home-products-that-will-genuinely-impress-guests-when-they?origin=fil-ho
 https://www.thedailybeast.com/obsessed/the-acolyte-review-dollar180-million-star-wars-prequel-is-waste-of-time
-#
-# chromium-based browser hangs on win:
-# https://www.independent.co.uk/news/uk/politics/general-election-debate-tax-rishi-sunak-b2556936.html
+https://www.independent.co.uk/news/uk/politics/general-election-debate-tax-rishi-sunak-b2556936.html
 https://nypost.com/2024/06/05/us-news/spirit-airlines-flyer-tracks-down-stolen-luggage-to-fort-lauderdale-airport-employee-using-apple-watch/
 # DDOS
 # https://www.sfgate.com/food/article/turners-kitchen-sf-deli-sandwiches-19482897.php
