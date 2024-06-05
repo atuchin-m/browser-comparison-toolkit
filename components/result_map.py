@@ -7,7 +7,7 @@
 import csv
 import statistics
 
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Set, Tuple
 
 class ResultMap():
   #  Dict[Tuple[metric, key, browser_spec], metric_values]
@@ -29,20 +29,30 @@ class ResultMap():
 
   # Calculate *_Total metrics
   def calc_total_metrics(self):
-    # Clear the old entries
+    all_keys: Set[str] = set()
+    total_metrics: Set[Tuple[str, str,str]] = set()
     for (metric, key, browser, version), _ in list(self._map.items()):
       if metric.endswith('_Total'):
+        # Clear the old entries
         del self._map[(metric, key, browser, version)]
+      else:
+        if key is not None:
+          all_keys.add(key)
+          total_metrics.add((metric, browser, version))
 
-    for (metric, key, browser, version), values in list(self._map.items()):
-      if key is None:
-        continue
+    for (metric, browser, version) in total_metrics:
       total_metric_name = f'{metric}_Total'
-      index = (total_metric_name, None, browser, version)
-      self._map.setdefault(index, [])
-      total_values = self._map.get(index)
-      assert total_values is not None
-      total_values.extend(values)
+      total_index = (total_metric_name, None, browser, version)
+      self._map.setdefault(total_index, [])
+      total = self._map[total_index]
+      for key in all_keys:
+        current = self._map.get((metric, key, browser, version))
+        if current is None:
+          continue
+        for i in range(len(current)):
+          if i >= len(total):
+            total.append(0)
+          total[i] += current[i]
 
   def write_csv(self, header: Optional[str], output_file: str):
     self.calc_total_metrics()
