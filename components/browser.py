@@ -184,8 +184,7 @@ class DDG(Browser):
   use_user_data_dir = False
 
   def binary_win(self) -> str:
-    return os.path.expandvars(
-        R'%ProgramFiles%\WindowsApps\DuckDuckGo.DesktopBrowser_0.63.3.0_x64__ya2fgkz3nks94\WindowsBrowser\DuckDuckGo.exe')
+    return 'DuckDuckGo.exe'
 
   def profile_dir(self) -> str:
     if is_mac():
