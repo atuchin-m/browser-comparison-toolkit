@@ -30,10 +30,10 @@ class LoadingMeasurement(Measurement):
       browser.prepare_profile()
       domain = urlparse(url).netloc
       result_dir = f'browsertime/{browser.name()}/{index}_{domain}/{iteration}/'
-      preURLDelay = 1000 if self.state.low_delays_for_testing else 10000
       res = run_browsertime(
           browser, url, result_dir, False, domain,
-          ['--preURLDelay', str(preURLDelay)])
+          1000 if self.state.low_delays_for_testing else 10000,
+          [])
 
       results.extend(res)
 

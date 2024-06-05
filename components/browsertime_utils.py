@@ -45,7 +45,7 @@ def _get_total_transfer_bytes(har: Dict) -> int:
 
 
 def run_browsertime(browser: Browser, cmd: str, result_dir: str, wait_for_load: bool,
-                    key: Optional[str],
+                    key: Optional[str], startup_delay: int,
                     extra_args: List[str]) -> List[Tuple[str, Optional[str], float]]:
   assert browser.browsertime_binary is not None
 
@@ -63,6 +63,7 @@ def run_browsertime(browser: Browser, cmd: str, result_dir: str, wait_for_load: 
     args.extend(['--pageLoadStrategy', 'none'])
 
   args.extend(extra_args)
+  args.extend(['--timeToSettle', str(startup_delay)])
   args.append('--chrome.noDefaultOptions')
   args.append('--firefox.noDefaultOptions')
   args.append('--firefox.disableBrowsertimeExtension')

@@ -27,15 +27,12 @@ class ScriptMeasurement(Measurement):
       assert os.path.exists(script)
       browser.prepare_profile()
       result_dir = f'browsertime/{browser.name()}/{index}_{name}/{iteration}/'
-      preURLDelay = 1000 if self.state.low_delays_for_testing else 10000
 
-      res = run_browsertime(browser, script, result_dir, False, None, [
-          '--preURLDelay',
-          str(preURLDelay),
-          '--timeouts.script',
-          str(30 * 60 * 1000),
-      ])
-      # browsertime/Chrome/0_speedometer2.js/0/screenshots/1
+      res = run_browsertime(
+        browser, script, result_dir, False, None,
+        1000 if self.state.low_delays_for_testing else 10000,
+        ['--timeouts.script', str(30 * 60 * 1000)]
+      )
 
 
       results.extend(res)
