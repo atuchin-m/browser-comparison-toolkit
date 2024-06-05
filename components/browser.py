@@ -312,7 +312,7 @@ class Firefox(Browser):
 
 
 SUPPORTED_BROWSER_LIST: List[Type[Browser]] = [Brave, BraveBeta, BraveNightly, Chrome, ChromeUBO, Opera, Edge, Firefox, DDG]
-DEFAULT_BROWSER_LIST: List[Type[Browser]] = [Brave, Chrome, ChromeUBO, Opera, Edge, Firefox]
+DEFAULT_BROWSER_LIST: List[Type[Browser]] = [Brave, Chrome, ChromeUBO, Opera, Edge, Firefox, DDG]
 if is_mac():
   SUPPORTED_BROWSER_LIST.append(Safari)
   DEFAULT_BROWSER_LIST.append(Safari)
