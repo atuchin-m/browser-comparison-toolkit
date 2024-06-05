@@ -13,7 +13,7 @@ import platform
 import psutil
 
 from tempfile import TemporaryDirectory
-from typing import Dict, List, Optional, Type
+from typing import Dict, List, Optional, Set, Type
 
 from components.utils import is_mac, is_win
 
@@ -23,6 +23,7 @@ class Browser:
   use_user_data_dir: bool = True
   browsertime_binary: Optional[str] = None
   args: List[str] = []
+  extra_processes = []
 
   temp_user_data_dir: Optional[TemporaryDirectory] = None
   process: Optional[subprocess.Popen] = None
@@ -61,9 +62,6 @@ class Browser:
 
   def binary_win(self) -> str:
     raise RuntimeError('Not implemented')
-
-  def extra_process(self) -> List[str]:
-    return []
 
   def get_start_cmd(self, use_source_profile=False) -> List[str]:
     return [self.binary()] + self.get_args(use_source_profile)
@@ -111,37 +109,47 @@ class Browser:
                                     stdout=subprocess.PIPE,
                                     stderr=subprocess.PIPE)
 
+  def find_extra_processes(self) ->  Set[psutil.Process]:
+    processes: Set[psutil.Process] = set()
+    if len(self.extra_processes) > 0:
+      for p in psutil.process_iter():
+        try:
+          if any(p.name().find(e) != -1 for e in self.extra_processes):
+            processes.add(p)
+        except:
+          pass
+    return processes
+
+
   def terminate(self, timeout = 20):
-    self.do_terminate(timeout)
+    if self.process is not None:
+      # terminate the main process
+      try:
+        self.process.terminate()
+
+        time_spend = 0
+        while self.process.poll() is None and time_spend < timeout:
+          time.sleep(1)
+          time_spend += 1
+      except:
+        logging.error('Failed to terminate %s', self.name())
+
+      if self.process.poll() is None:
+        try:
+          logging.info('Killing %s pid %d', self.binary_name, self.process.pid)
+          if is_win():
+            subprocess.call(['taskkill', '/F', '/T', '/PID',  str(self.process.pid)])
+          else:
+            self.process.kill()
+          time.sleep(2)
+        finally:
+          pass
+
     try:
       if self.temp_user_data_dir is not None:
         self.temp_user_data_dir.cleanup()
     except:
       pass
-
-  def do_terminate(self, timeout):
-    if self.process is None:
-      return
-    try:
-      self.process.terminate()
-
-      time_spend = 0
-      while self.process.poll() is None and time_spend < timeout:
-        time.sleep(1)
-        time_spend += 1
-    except:
-      logging.error('Failed to terminate %s', self.name())
-
-    if self.process.poll() is None:
-      try:
-        logging.info('Killing %s pid %d', self.binary_name, self.process.pid)
-        if is_win():
-          subprocess.call(['taskkill', '/F', '/T', '/PID',  str(self.process.pid)])
-        else:
-          self.process.kill()
-        time.sleep(2)
-      finally:
-        pass
 
   def open_url(self, url: str):
     if self.process is None:
@@ -182,6 +190,13 @@ class BraveNightly(_Chromium):
 class DDG(Browser):
   binary_name = 'DuckDuckGo'
   use_user_data_dir = False
+  extra_processes = ['DuckDuckGo', 'com.apple.WebKit']
+
+  def terminate(self):
+    if is_win():
+      subprocess.call(['taskkill', '/IM', 'DuckDuckGo.exe'])
+      time.sleep(2)
+    super().terminate()
 
   def binary_win(self) -> str:
     return 'DuckDuckGo.exe'
@@ -194,15 +209,12 @@ class DDG(Browser):
   def get_version(self) -> Optional[str]:
     return None
 
-  def extra_process(self) -> List[str]:
-    return ['DuckDuckGo', 'com.apple.WebKit']
-
   def open_url(self, url: str):
     if is_mac():
       if self.process is None:
         self.process = subprocess.Popen(self.get_start_cmd() + [url], stdout=subprocess.PIPE)
         return
-      rv = subprocess.check_call(['open', '-a', 'DuckDuckGo', url], stdout=subprocess.PIPE)
+      subprocess.check_call(['open', '-a', 'DuckDuckGo', url], stdout=subprocess.PIPE)
     else:
       super().open_url(url)
 
@@ -222,6 +234,13 @@ class ChromeUBO(Chrome):
 class Opera(_Chromium):
   binary_name = 'Opera'
   args = ['--ran-launcher']
+  extra_processes = ['opera.exe']
+
+  def terminate(self):
+    if is_win():
+      subprocess.call(['taskkill', '/IM', 'opera.exe'])
+      time.sleep(2)
+    super().terminate()
 
   def binary_win(self) -> str:
     return os.path.expandvars(
@@ -230,6 +249,13 @@ class Opera(_Chromium):
 class Edge(Browser):
   binary_name = 'Microsoft Edge'
   browsertime_binary = 'edge'
+  extra_processes = ['edge.exe']
+
+  def terminate(self):
+    if is_win():
+      subprocess.call(['taskkill', '/IM', 'edge.exe'])
+      time.sleep(2)
+    super().terminate()
 
   def binary_win(self) -> str:
     return os.path.expandvars(
@@ -240,14 +266,12 @@ class Safari(Browser):
   binary_name = 'Safari'
   use_user_data_dir = False
   browsertime_binary = 'safari'
+  extra_processes = ['Safari', 'com.apple.WebKit']
 
   def profile_dir(self) -> str:
     if is_mac():
       return '~/Library/Safari'
     raise RuntimeError('Not implemented')
-
-  def extra_process(self) -> List[str]:
-    return ['Safari', 'com.apple.WebKit']
 
   def get_version(self) -> Optional[str]:
     args = ['/usr/libexec/PlistBuddy',
@@ -261,6 +285,13 @@ class Firefox(Browser):
   binary_name = 'Firefox'
   use_user_data_dir = False
   browsertime_binary = 'firefox'
+  extra_processes = ['firefox', 'Firefox', 'plugin-container']
+
+  def terminate(self):
+    if is_win():
+      subprocess.call(['taskkill', '/IM', 'firefox.exe'])
+      time.sleep(2)
+    super().terminate()
 
   def profile_dir(self) -> str:
     if is_mac():
@@ -272,15 +303,6 @@ class Firefox(Browser):
 
   def binary_win(self) -> str:
     return os.path.expandvars(R'%ProgramW6432%\Mozilla Firefox\firefox.exe')
-
-  def do_terminate(self, timeout):
-    if is_win():
-      subprocess.call(['taskkill.exe', '/IM', 'firefox.exe'])
-    else:
-      super().do_terminate(timeout)
-
-  def extra_process(self) -> List[str]:
-    return ['firefox', 'Firefox', 'plugin-container']
 
 
 SUPPORTED_BROWSER_LIST: List[Type[Browser]] = [Brave, BraveBeta, BraveNightly, Chrome, ChromeUBO, Opera, Edge, Firefox, DDG]

@@ -43,9 +43,12 @@ async def _get_private_memory_usage_win(pid: int) -> Optional[float]:
   stdout, _ = await p.communicate()
   if p.returncode != 0:
     return None
-  pmf = float(stdout.decode().rstrip())
-  assert (pmf > 0)
-  return pmf
+  try:
+    pmf = float(stdout.decode().rstrip())
+    assert pmf > 0
+    return pmf
+  except:
+    return None
 
 
 async def _get_private_memory_usage(pid: int) -> Optional[float]:
@@ -141,7 +144,7 @@ def get_memory_metrics(browser: Browser) -> List[Tuple[str, float]]:
   if browser.process is not None:
     processes = get_all_children(browser.process.pid)
 
-  extras = browser.extra_process()
+  extras = browser.find_extra_processes()
   if len(extras) > 0:
     for p in psutil.process_iter():
       try:
