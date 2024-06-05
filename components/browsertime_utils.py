@@ -30,6 +30,17 @@ def _get_total_transfer_bytes(har: Dict) -> int:
     res = e['response']
     if '_transferSize' in res:
       total_bytes += res['_transferSize']
+    else:
+      if 'bodySize' in res:
+        try:
+          total_bytes += res['bodySize']
+        except:
+          pass
+      if 'headersSize' in res:
+        try:
+          total_bytes += res['headersSize']
+        except:
+          pass
   return total_bytes
 
 
