@@ -249,11 +249,11 @@ class Opera(_Chromium):
 class Edge(Browser):
   binary_name = 'Microsoft Edge'
   browsertime_binary = 'edge'
-  extra_processes = ['edge.exe']
+  extra_processes = ['msedge.exe']
 
   def terminate(self):
     if is_win():
-      subprocess.call(['taskkill', '/IM', 'edge.exe'])
+      subprocess.call(['taskkill', '/IM', 'msedge.exe'])
       time.sleep(2)
     super().terminate()
 
