@@ -34,16 +34,25 @@ class MemoryMeasurement(Measurement):
     metrics = []
     try:
       browser.prepare_profile()
+      browser.start()
+      time.sleep(self.start_delay)
       for url in self.state.urls:
+        if url.startswith('#') or url.startswith('/'):
+          continue
+        if url == '':
+          break
         browser.open_url(url)
         time.sleep(self.open_url_delay)
+
       time.sleep(self.measure_delay)
 
       assert browser.process is not None
       for metric, value in get_memory_metrics(browser):
         metrics.append((metric, None, value))
-
-    finally:
       browser.terminate()
+    except:
+      browser.terminate()
+      raise
+
     time.sleep(self.terminate_delay)
     return metrics
