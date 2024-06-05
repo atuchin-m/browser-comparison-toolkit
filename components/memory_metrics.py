@@ -142,7 +142,10 @@ def get_memory_metrics_for_processes(processes: Set[psutil.Process]) -> List[Tup
 def get_memory_metrics(browser: Browser) -> List[Tuple[str, float]]:
   processes: Set[psutil.Process] = set()
   if browser.process is not None:
-    processes = get_all_children(browser.process.pid)
+    try:
+      processes = get_all_children(browser.process.pid)
+    except:
+      pass
 
   extras = browser.find_extra_processes()
   if len(extras) > 0:
