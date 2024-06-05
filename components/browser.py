@@ -114,7 +114,8 @@ class Browser:
     if len(self.extra_processes) > 0:
       for p in psutil.process_iter():
         try:
-          if any(p.name().find(e) != -1 for e in self.extra_processes):
+          if (any(p.name().find(e) != -1 for e in self.extra_processes) or
+              any(p.cmdline()[0].find(e) != -1 for e in self.extra_processes)):
             processes.add(p)
         except:
           pass

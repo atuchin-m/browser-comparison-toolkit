@@ -147,12 +147,6 @@ def get_memory_metrics(browser: Browser) -> List[Tuple[str, float]]:
     except:
       pass
 
-  extras = browser.find_extra_processes()
-  if len(extras) > 0:
-    for p in psutil.process_iter():
-      try:
-        if any(p.name().find(e) != -1 for e in extras):
-          processes.add(p)
-      except:
-        pass
+  for p in browser.find_extra_processes():
+    processes.add(p)
   return get_memory_metrics_for_processes(processes)
