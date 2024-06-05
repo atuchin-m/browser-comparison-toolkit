@@ -92,18 +92,30 @@ def run_browsertime(browser: Browser, cmd: str, result_dir: str, wait_for_load: 
     url = item['info']['url']
     current_key = key if key is not None else urlparse(url).netloc
     timings = item['statistics']['timings']
-    if 'firstPaint' in timings:
-      results.append(('firstPaint', current_key,
-                      timings['firstPaint']['mean']))
-    if 'largestContentfulPaint' in timings:
-      results.append(('largestContentfulPaint', current_key,
-                      timings['largestContentfulPaint']['renderTime']['mean']))
+    firstPaint = timings['firstPaint']['mean'] if 'firstPaint' in timings else -1
+    results.append(('firstPaint', current_key, firstPaint))
+
+    largestContentfulPaint = (
+      timings['largestContentfulPaint']['renderTime']['mean']
+      if 'largestContentfulPaint' in timings else -1
+    )
+    results.append(('largestContentfulPaint', current_key,
+                    largestContentfulPaint))
+
     pageTimings = timings.get('pageTimings')
-    if pageTimings is not None:
-      if 'domContentLoadedTime' in pageTimings:
-        results.append(('domContentLoadedTime', current_key, pageTimings['domContentLoadedTime']['mean']))
-      if 'pageLoadTime' in pageTimings:
-        results.append(('pageLoadTime', current_key, pageTimings['pageLoadTime']['mean']))
+
+    dcl = (
+      pageTimings['domContentLoadedTime']['mean']
+      if pageTimings is not None and 'domContentLoadedTime' in pageTimings
+      else -1
+    )
+    results.append(('domContentLoadedTime', current_key, dcl))
+
+    pageLoadTime = (
+      pageTimings['pageLoadTime']['mean']
+      if pageTimings is not None and 'pageLoadTime' in pageTimings else -1
+    )
+    results.append(('pageLoadTime', current_key, pageLoadTime))
 
     for extra in item['extras']:
       for metric, value in extra.items():
