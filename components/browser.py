@@ -111,7 +111,7 @@ class Browser:
                                     stdout=subprocess.PIPE,
                                     stderr=subprocess.PIPE)
 
-  def terminate(self, timeout = 10):
+  def terminate(self, timeout = 20):
     self.do_terminate(timeout)
     try:
       if self.temp_user_data_dir is not None:
@@ -124,18 +124,22 @@ class Browser:
       return
     try:
       self.process.terminate()
+
+      time_spend = 0
+      while self.process.poll() is None and time_spend < timeout:
+        time.sleep(1)
+        time_spend += 1
     except:
-      pass
+      logging.error('Failed to terminate %s', self.name())
 
-    time_spend = 0
-    while self.process.poll() is not None and time_spend < timeout:
-      time.sleep(1)
-      time_spend += 1
-
-    if self.process.poll() is not None:
-      logging.info('Killing %s pid %d', self.binary_name, self.process.pid)
+    if self.process.poll() is None:
       try:
-        self.process.kill()
+        logging.info('Killing %s pid %d', self.binary_name, self.process.pid)
+        if is_win():
+          subprocess.call(['taskkill', '/F', '/T', '/PID',  str(self.process.pid)])
+        else:
+          self.process.kill()
+        time.sleep(2)
       finally:
         pass
 
