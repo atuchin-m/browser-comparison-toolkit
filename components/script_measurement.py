@@ -21,6 +21,8 @@ class ScriptMeasurement(Measurement):
 
     for index, name in enumerate(urls):
       browser = browser_class()
+      if browser.browsertime_binary is None:
+        continue
       script = os.path.join('benchmark_scripts', name)
       assert os.path.exists(script)
       browser.prepare_profile()

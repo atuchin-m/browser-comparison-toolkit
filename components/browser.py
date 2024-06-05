@@ -21,7 +21,7 @@ from components.utils import is_mac, is_win
 class Browser:
   binary_name: str
   use_user_data_dir: bool = True
-  browsertime_binary: str
+  browsertime_binary: Optional[str] = None
   args: List[str] = []
 
   temp_user_data_dir: Optional[TemporaryDirectory] = None

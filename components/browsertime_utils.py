@@ -36,6 +36,8 @@ def _get_total_transfer_bytes(har: Dict) -> int:
 def run_browsertime(browser: Browser, cmd: str, result_dir: str, wait_for_load: bool,
                     key: Optional[str],
                     extra_args: List[str]) -> List[Tuple[str, Optional[str], float]]:
+  assert browser.browsertime_binary is not None
+
   npm_binary = 'npm.cmd' if is_win() else 'npm'
   args = ([npm_binary, 'exec', 'browsertime', '--'] +
           ['-b', browser.browsertime_binary] + ['-n', '1'] +

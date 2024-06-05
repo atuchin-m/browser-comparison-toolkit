@@ -20,6 +20,8 @@ class LoadingMeasurement(Measurement):
 
     for index, url in enumerate(urls):
       browser = browser_class()
+      if browser.browsertime_binary is None:
+        continue
       browser.prepare_profile()
       domain = urlparse(url).netloc
       result_dir = f'browsertime/{browser.name()}/{index}_{domain}/{iteration}/'
