@@ -70,12 +70,15 @@ def _find_main_process(processes: Set[psutil.Process]) -> Optional[psutil.Proces
     pids.add(p.pid)
   candidates = []
   for p in processes:
-    if p.parent().pid in pids:
-      continue
-    if any(arg.startswith('--type=') for arg in p.cmdline()):
-      continue
+    try:
+      if p.parent().pid in pids:
+        continue
+      if any(arg.startswith('--type=') for arg in p.cmdline()):
+        continue
 
-    candidates.append(p)
+      candidates.append(p)
+    except:
+      pass
 
   if len(candidates) == 1:
     return candidates[0]
@@ -109,13 +112,16 @@ def get_memory_metrics_for_processes(processes: Set[psutil.Process]) -> List[Tup
     main_rss = main_process.memory_info().rss
 
   for p in processes:
-    private = private_bytes[p.pid]
-    if private is None:
-      # TODO: add warn?
-      continue
-    total_private += private
-    if p.cmdline().count('--type=gpu-process') > 0:
-      gpu_private += private
+    try:
+      private = private_bytes[p.pid]
+      if private is None:
+        # TODO: add warn?
+        continue
+      total_private += private
+      if p.cmdline().count('--type=gpu-process') > 0:
+        gpu_private += private
+    except:
+      pass
 
   metrics: List[Tuple[str, float]] = [('TotalPrivateMemory',  total_private)]
   if gpu_private > 0:

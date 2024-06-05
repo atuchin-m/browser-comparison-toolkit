@@ -25,7 +25,7 @@ class LoadingMeasurement(Measurement):
       result_dir = f'browsertime/{browser.name()}/{index}_{domain}/{iteration}/'
       preURLDelay = 1000 if self.state.low_delays_for_testing else 10000
       res = run_browsertime(
-          browser, url, result_dir, False,
+          browser, url, result_dir, False, domain,
           ['--preURLDelay', str(preURLDelay)])
 
       results.extend(res)

@@ -28,12 +28,13 @@ def _get_total_transfer_bytes(har: Dict) -> int:
   total_bytes = 0
   for e in har['log']['entries']:
     res = e['response']
-    if hasattr(res, '_transferSize'):
-      total_bytes += e['response']['_transferSize']
+    if '_transferSize' in res:
+      total_bytes += res['_transferSize']
   return total_bytes
 
 
 def run_browsertime(browser: Browser, cmd: str, result_dir: str, wait_for_load: bool,
+                    key: Optional[str],
                     extra_args: List[str]) -> List[Tuple[str, Optional[str], float]]:
   npm_binary = 'npm.cmd' if is_win() else 'npm'
   args = ([npm_binary, 'exec', 'browsertime', '--'] +
@@ -44,8 +45,9 @@ def run_browsertime(browser: Browser, cmd: str, result_dir: str, wait_for_load: 
           [f'--{browser.browsertime_binary}.binaryPath',
            browser.binary()])
   if not wait_for_load:
-    args.extend(['--pageCompleteCheck', 'return true'])
-    args.extend(['--pageCompleteCheckStartWait', '15000'])
+    args.extend(['--pageCompleteCheck', '/tmp/test.js'])
+    args.extend(['--pageCompleteCheckStartWait', '10000'])
+    args.extend(['--pageLoadStrategy', 'none'])
 
   args.extend(extra_args)
   args.append('--chrome.noDefaultOptions')
@@ -74,24 +76,28 @@ def run_browsertime(browser: Browser, cmd: str, result_dir: str, wait_for_load: 
 
   for item in output_json:
     url = item['info']['url']
-    domain = urlparse(url).netloc
-    print(output)
+    current_key = key if key is not None else urlparse(url).netloc
     timings = item['statistics']['timings']
-    # results.append(('fullyLoaded', domain, timings['fullyLoaded']['mean']))
-    results.append(('firstPaint', domain,
-                    timings['firstPaint']['mean']))
-    # results.append(('largestContentfulPaint', domain,
-    #                 timings['largestContentfulPaint']['renderTime']['mean']))
-    results.append(('domContentLoadedTime', domain, timings['pageTimings']['domContentLoadedTime']['mean']))
-    results.append(('pageLoadTime', domain, timings['pageTimings']['pageLoadTime']['mean']))
+    if 'firstPaint' in timings:
+      results.append(('firstPaint', current_key,
+                      timings['firstPaint']['mean']))
+    if 'largestContentfulPaint' in timings:
+      results.append(('largestContentfulPaint', current_key,
+                      timings['largestContentfulPaint']['renderTime']['mean']))
+    pageTimings = timings.get('pageTimings')
+    if pageTimings is not None:
+      if 'domContentLoadedTime' in pageTimings:
+        results.append(('domContentLoadedTime', current_key, pageTimings['domContentLoadedTime']['mean']))
+      if 'pageLoadTime' in pageTimings:
+        results.append(('pageLoadTime', current_key, pageTimings['pageLoadTime']['mean']))
 
     for extra in item['extras']:
       for metric, value in extra.items():
         if isinstance(value, list):
           for v in value:
-            results.append((metric, None, v))
+            results.append((metric, key, v))
         else:
-          results.append((metric, None, float(value)))
+          results.append((metric, key, float(value)))
   if har_json:
-    results.append(('totalBytes', None, _get_total_transfer_bytes(har_json)))
+    results.append(('totalBytes', key, _get_total_transfer_bytes(har_json)))
   return results
