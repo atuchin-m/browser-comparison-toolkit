@@ -57,9 +57,11 @@ def run_browsertime(browser: Browser, cmd: str, result_dir: str, wait_for_load: 
           ['--viewPort', 'maximize'] +
           [f'--{browser.browsertime_binary}.binaryPath',
            browser.binary()])
+  time_to_run = 0
   if not wait_for_load:
+    time_to_run = 15 * 1000
     args.extend(['--pageCompleteCheck', 'return true'])
-    args.extend(['--pageCompleteCheckStartWait', '15000'])
+    args.extend(['--pageCompleteCheckStartWait', str(time_to_run)])
     args.extend(['--pageLoadStrategy', 'none'])
 
   args.extend(extra_args)
@@ -109,12 +111,17 @@ def run_browsertime(browser: Browser, cmd: str, result_dir: str, wait_for_load: 
       if pageTimings is not None and 'domContentLoadedTime' in pageTimings
       else -1
     )
+
+    if dcl == 0:
+      dcl = time_to_run
     results.append(('domContentLoadedTime', current_key, dcl))
 
     pageLoadTime = (
       pageTimings['pageLoadTime']['mean']
       if pageTimings is not None and 'pageLoadTime' in pageTimings else -1
     )
+    if pageLoadTime == 0:
+      pageLoadTime = time_to_run
     results.append(('pageLoadTime', current_key, pageLoadTime))
 
     for extra in item['extras']:
