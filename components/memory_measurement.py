@@ -15,9 +15,9 @@ from components.memory_metrics import get_memory_metrics
 
 class MemoryMeasurement(Measurement):
   start_delay = 5
-  open_url_delay = 5
-  measure_delay = 60
-  terminate_delay = 10
+  open_url_delay = 15
+  measure_delay = 30
+  terminate_delay = 5
 
   def __init__(self, state: MeasurementState) -> None:
     super().__init__(state)

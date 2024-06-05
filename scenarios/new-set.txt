@@ -14,7 +14,8 @@ https://www.cnet.com/tech/services-and-software/chatgpt-3-5-review-first-doesnt-
 https://www.yahoo.com/news/last-world-war-ii-vets-224023717.html
 https://edition.cnn.com/world/live-news/boeing-starliner-launch-06-05-24-scn/index.html
 https://www.espn.com/nba/insider/story/_/id/40280111/lowe-juicy-subplots-tilt-dallas-mavericks-boston-celtics-nba-finals-win
-https://www.amazon.com/dp/B08D7JM1X2/
+# Disabled because of DDOS protection:
+# https://www.amazon.com/dp/B08D7JM1X2/
 https://www.walmart.com/ip/Kiskick-Halloween-Artificial-Pumpkin-Set-8-16Pcs-Black-White-Plaid-Thanksgiving-Autumn-Festival-Decorations-Small-Simulation-Foam-Pumpkins-Home-Suppl/2404907905
 # Disabled because of DDOS protection:
 # https://www.etsy.com/shop/Yegprint
