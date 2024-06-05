@@ -153,13 +153,16 @@ class Browser:
       pass
 
   def open_url(self, url: str):
-    if self.process is None:
-      self.process = subprocess.Popen(self.get_start_cmd() + [url], stdout=subprocess.PIPE)
-      return
+    try:
+      subprocess.run(self.get_start_cmd() + [url],
+                     stdout=subprocess.PIPE,
+                     check=self.name() != 'Opera',
+                     timeout=15)
+    except:
+      # kill the process in case a hang
+      self.terminate()
+      raise
 
-    rv = subprocess.call(self.get_start_cmd() + [url], stdout=subprocess.PIPE)
-    if self.name() != 'Opera':
-      assert rv == 0
 
 
 class _Chromium(Browser):
@@ -291,6 +294,8 @@ class Firefox(Browser):
   def terminate(self):
     if is_win():
       subprocess.call(['taskkill', '/IM', 'firefox.exe'])
+    if is_mac():
+      subprocess.call(['killall', 'firefox'])
       time.sleep(2)
     super().terminate()
 
