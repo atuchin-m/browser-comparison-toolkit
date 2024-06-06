@@ -45,6 +45,7 @@ async def _get_private_memory_usage_win(pid: int) -> Optional[float]:
     return None
   try:
     pmf = float(stdout.decode().rstrip())
+    logging.debug('process %d usage %f', pid, pmf)
     assert pmf > 0
     return pmf
   except:
