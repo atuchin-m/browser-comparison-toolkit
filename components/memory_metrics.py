@@ -10,7 +10,7 @@ from typing import Dict, List, Optional, Set, Tuple, Type
 
 from components.browser import Browser
 
-async def _get_private_memory_usage_mac(pid: int) -> Optional[float]:
+async def _get_private_memory_usage_mac(name: str, pid: int) -> Optional[float]:
   process = await asyncio.subprocess.create_subprocess_exec(
       'vmmap', '--summary', str(pid),
       stderr=asyncio.subprocess.PIPE,
@@ -29,11 +29,11 @@ async def _get_private_memory_usage_mac(pid: int) -> Optional[float]:
 
   ex = ['K', 'M', 'G'].index(scale) + 1
   mem = val * math.pow(1024, ex)
-  logging.debug('%d %f %s %d %f', pid, val, scale, ex, mem)
+  logging.debug('Process %s (pid %d): %f %s %d %f', name, pid, val, scale, ex, mem)
   return mem
 
 
-async def _get_private_memory_usage_win(pid: int) -> Optional[float]:
+async def _get_private_memory_usage_win(name: str, pid: int) -> Optional[float]:
   p = await asyncio.subprocess.create_subprocess_exec(
       'powershell.exe', '-Command',
       ('WmiObject -class Win32_PerfFormattedData_PerfProc_Process' +
@@ -45,18 +45,18 @@ async def _get_private_memory_usage_win(pid: int) -> Optional[float]:
     return None
   try:
     pmf = float(stdout.decode().rstrip())
-    logging.debug('process %d usage %f', pid, pmf)
+    logging.debug('process %s (pid %d) usage %f', name, pid, pmf)
     assert pmf > 0
     return pmf
   except:
     return None
 
 
-async def _get_private_memory_usage(pid: int) -> Optional[float]:
+async def _get_private_memory_usage(name: str, pid: int) -> Optional[float]:
   if platform.system() == 'Darwin':
-    return await _get_private_memory_usage_mac(pid)
+    return await _get_private_memory_usage_mac(name, pid)
   if platform.system() == 'Windows':
-    return await _get_private_memory_usage_win(pid)
+    return await _get_private_memory_usage_win(name, pid)
   raise RuntimeError('Platform is not supported')
 
 def get_all_children(pid: int) -> Set[psutil.Process]:
@@ -98,17 +98,16 @@ def get_memory_metrics_for_processes(processes: Set[psutil.Process]) -> List[Tup
   private_bytes: Dict[int, float] = {}
   loop = asyncio.get_event_loop()
 
-  async def calc_private_bytes(pid: int):
-    logging.debug('##' + p.name())
-    result = await _get_private_memory_usage(pid)
+  async def calc_private_bytes(name: str, pid: int):
+    result = await _get_private_memory_usage(name, pid)
     if result is not None:
       private_bytes[pid] = result
 
   for p in processes:
-    tasks.append(loop.create_task(calc_private_bytes(p.pid)))
+    tasks.append(loop.create_task(calc_private_bytes(p.name(), p.pid)))
   if len(tasks) > 0:
     loop.run_until_complete(asyncio.wait(tasks))
-  logging.debug('##async done')
+  logging.debug('Async memory measurements are done')
 
   main_process = _find_main_process(processes)
   if main_process is not None:

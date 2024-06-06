@@ -6,6 +6,7 @@
 
 import argparse
 import logging
+import time
 from typing import Dict, List
 
 from components.browser import get_browser_classes_from_str
@@ -76,12 +77,17 @@ def main():
         version = "unknown"
       versions[browser.name()] = version
 
+  run_index = 0
+  total_runs = len(browser_classes) * args.repeat
+  global_start_time = time.time()
+
   for index in range(args.repeat):
     for browser_class in browser_classes:
       browser_name = browser_class().name()
       version = versions[browser_name]
       logging.info('Testing %d/%s-%s', index, browser_name, version)
       attempt = 0
+      run_index += 1
       while True:
         try:
           metrics = measure.Run(index, browser_class)
@@ -98,6 +104,12 @@ def main():
           else:
             raise
       results.write_csv(header, args.output)
+      total_spent = time.time() - global_start_time
+      logging.info('### %d / %d spent %.1f min, remaining %.1f min',
+                   run_index, total_runs,
+                   total_spent / 60,
+                   total_spent * (total_runs - run_index)/ run_index / 60)
+
 
   for msg in final_messages:
     logging.error(msg)
