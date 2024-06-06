@@ -8,10 +8,21 @@ import pandas
 from typing import Dict, Optional, Tuple
 from matplotlib.lines import Line2D
 
-def get_extra_title(metric: str) -> Optional[str]:
+def get_extra_title(metric: str, units: str) -> Optional[str]:
   if metric == 'speedometer3' or metric == 'jetstream' or metric == 'motionmark':
     return 'higher is better'
+  if metric.find('ytes') != -1 or metric.find('emory') != -1:
+    return f'{units}B, lower is better'
   return None
+
+def get_scale(units: str) -> float:
+  if units == 'K':
+    return 1000
+  if units == 'M':
+    return 1000 * 1000
+  if units == 'G':
+    return 1000 * 1000 * 1000
+  return 1
 
 def get_color(browser:str) -> str:
   if browser.find('Nightly') != -1:
@@ -38,6 +49,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('input_csv', type=str)
 parser.add_argument('output_png', type=str)
 parser.add_argument('--filter', type=str)
+parser.add_argument('--units', choices=['K', 'M', 'G'])
 parser.add_argument('--legend', action='store_true')
 args = parser.parse_args()
 
@@ -70,6 +82,8 @@ for _, data in by_metric:
   if not should_skip(data):
     size += 1
 
+scale = get_scale(args.units)
+
 plt.figure(figsize=(10 * size, 8))
 index = 0
 for _, data in by_metric:
@@ -80,7 +94,7 @@ for _, data in by_metric:
   grouped = data.groupby(['browser'], sort=True)
   index += 1
   plt.subplot(1, size, index)
-  extra_title = get_extra_title(metric)
+  extra_title = get_extra_title(metric, args.units)
   if extra_title:
     metric += f'\n({extra_title})'
   plt.title(metric)
@@ -88,8 +102,8 @@ for _, data in by_metric:
     assert group.shape[0] == 1
     browser = group.iat[0, 1]
     version = group.iat[0, 2]
-    avg = group.iat[0, 3]
-    err = group.iat[0, 4]
+    avg = group.iat[0, 3] / scale
+    err = group.iat[0, 4] / scale
     print(browser, '{:.2f} ± {:.2f}'.format(avg, err))
     color = get_color(browser)
     legend[(browser, version)] = color
