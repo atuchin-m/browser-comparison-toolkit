@@ -38,7 +38,7 @@ async def _get_private_memory_usage_win(pid: int) -> Optional[float]:
       'powershell.exe', '-Command',
       ('WmiObject -class Win32_PerfFormattedData_PerfProc_Process' +
        f' -filter "IDProcess like {pid}" | ' +
-       'Select-Object -expand workingSetPrivate'),
+       'Select-Object -expand PrivateBytes'),
        stdout = asyncio.subprocess.PIPE)
   stdout, _ = await p.communicate()
   if p.returncode != 0:
