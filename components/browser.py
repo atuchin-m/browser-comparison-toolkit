@@ -215,9 +215,6 @@ class DDG(Browser):
 
   def open_url(self, url: str):
     if is_mac():
-      if self.process is None:
-        self.process = subprocess.Popen(self.get_start_cmd() + [url], stdout=subprocess.PIPE)
-        return
       subprocess.check_call(['open', '-a', 'DuckDuckGo', url], stdout=subprocess.PIPE)
     else:
       super().open_url(url)
@@ -284,6 +281,11 @@ class Safari(Browser):
             '/Applications/Safari.app/Contents/Info.plist']
     return subprocess.check_output(args).decode('utf-8').strip()
 
+  def open_url(self, url: str):
+    if is_mac():
+      subprocess.check_call(['open', '-a', 'Safari', url], stdout=subprocess.PIPE)
+    else:
+      super().open_url(url)
 
 class Firefox(Browser):
   binary_name = 'Firefox'

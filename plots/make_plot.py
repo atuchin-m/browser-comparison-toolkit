@@ -107,7 +107,7 @@ for _, data in by_metric:
     print(browser, '{:.2f} ± {:.2f}'.format(avg, err))
     color = get_color(browser)
     legend[(browser, version)] = color
-    plt.bar(x = '{}\n{:.1f}\n±{:.1f}'.format(browser, avg, err),
+    plt.bar(x = '{}\n{:.2f}\n±{:.2f}'.format(browser, avg, err),
       height = avg,
       yerr = err,
       width=barWidth,
