@@ -301,6 +301,16 @@ class Firefox(Browser):
       time.sleep(2)
     super().terminate()
 
+  def prepare_profile(self):
+    cache_dir = None
+    if is_mac():
+      cache_dir = '~/Library/Caches/Firefox/'
+    if is_win():
+      cache_dir = os.path.expandvars(
+          R'%USERPROFILE%\AppData\Local\Mozilla\Firefox')
+    if cache_dir is not None:
+      shutil.rmtree(cache_dir)
+
   def profile_dir(self) -> str:
     if is_mac():
       return '~/Library/Application Support/Firefox/'
