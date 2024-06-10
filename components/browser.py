@@ -269,6 +269,10 @@ class Safari(Browser):
   browsertime_binary = 'safari'
   extra_processes = ['Safari', 'com.apple.WebKit']
 
+  def prepare_profile(self):
+    assert is_mac()
+    shutil.rmtree('~/Library/Containers/com.apple.Safari/Data/Library/Caches')
+
   def profile_dir(self) -> str:
     if is_mac():
       return '~/Library/Safari'
