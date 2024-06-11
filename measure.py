@@ -6,6 +6,7 @@
 
 import argparse
 import logging
+import os
 import time
 from typing import Dict, List
 
@@ -56,7 +57,7 @@ def main():
   logging.basicConfig(level=log_level, format=log_format)
 
   header = None
-  if args.append:
+  if args.append and os.path.isfile(args.output):
     with open(args.output, 'r', newline='', encoding='utf-8') as result_file:
       header = result_file.read()
 
