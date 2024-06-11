@@ -271,7 +271,8 @@ class Safari(Browser):
 
   def prepare_profile(self):
     assert is_mac()
-    shutil.rmtree('~/Library/Containers/com.apple.Safari/Data/Library/Caches')
+    dir = os.path.expanduser('~/Library/Containers/com.apple.Safari/Data/Library/Caches')
+    shutil.rmtree(dir)
 
   def profile_dir(self) -> str:
     if is_mac():
