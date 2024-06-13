@@ -207,7 +207,7 @@ class DDG(Browser):
 
   def profile_dir(self) -> str:
     if is_mac():
-      return '~/Library/Containers/com.duckduckgo.macos.browser/Data/Library/Application Support/'
+      return os.path.expanduser('~/Library/Containers/com.duckduckgo.macos.browser/Data/Library/Application Support/')
     raise RuntimeError('Not implemented')
 
   def get_version(self) -> Optional[str]:
@@ -276,7 +276,7 @@ class Safari(Browser):
 
   def profile_dir(self) -> str:
     if is_mac():
-      return '~/Library/Safari'
+      return os.path.expanduser('~/Library/Safari')
     raise RuntimeError('Not implemented')
 
   def get_version(self) -> Optional[str]:
@@ -309,16 +309,16 @@ class Firefox(Browser):
   def prepare_profile(self):
     cache_dir = None
     if is_mac():
-      cache_dir = '~/Library/Caches/Firefox/'
+      cache_dir = os.path.expanduser('~/Library/Caches/Firefox/')
     if is_win():
       cache_dir = os.path.expandvars(
           R'%USERPROFILE%\AppData\Local\Mozilla\Firefox')
     if cache_dir is not None:
-      shutil.rmtree(cache_dir)
+      shutil.rmtree(cache_dir, ignore_errors=True)
 
   def profile_dir(self) -> str:
     if is_mac():
-      return '~/Library/Application Support/Firefox/'
+      return os.path.expanduser('~/Library/Application Support/Firefox/')
     if is_win():
       return os.path.expandvars(
           R'%USERPROFILE%\AppData\Roaming\Mozilla\Firefox')

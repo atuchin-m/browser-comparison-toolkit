@@ -117,7 +117,7 @@ legend_lines = []
 browser_list = []
 print('\nBrowsers:')
 for (browser, version), color in legend.items():
-  browser_list.append(browser + ' ' + version)
+  browser_list.append(browser + ' ' + str(version))
   legend_lines.append(Line2D([0], [0], color = color, lw = 2))
   print(f'{browser} {version}')
 
