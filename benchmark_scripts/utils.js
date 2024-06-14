@@ -40,8 +40,8 @@ function getBrowserAttr(context) {
 
 async function getMemoryMetrics(context) {
   const attr = getBrowserAttr(context)
-  // TODO: change vpython3
-  let cmd = `vpython3 get_memory_metrics.py ${attr.type}`
+  // TODO: change python3
+  let cmd = `python3 get_memory_metrics.py ${attr.type}`
   if (attr.args != null && attr.args[0].startsWith('user-data'))
     cmd += ` "${attr.args[0]}"`
   console.log(cmd)

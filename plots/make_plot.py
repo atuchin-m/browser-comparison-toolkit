@@ -13,6 +13,9 @@ def get_extra_title(metric: str, units: str) -> Optional[str]:
     return 'higher is better'
   if metric.find('ytes') != -1 or metric.find('emory') != -1:
     return f'{units}B, lower is better'
+  if metric.find('LoadTime') != -1:
+    if units == 'K':
+      return f's, lower is better'
   return None
 
 def get_scale(units: str) -> float:
