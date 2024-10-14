@@ -1,4 +1,5 @@
-
+*.csv
+*.png
 .DS_Store
 *.tar.gz
 browser_profiles/
