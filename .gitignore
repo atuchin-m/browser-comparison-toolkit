@@ -2,7 +2,7 @@
 *.png
 .DS_Store
 *.tar.gz
-browser_profiles/
+browser_profiles*/
 browsertime/
 browsertime-results/
 __pycache__
