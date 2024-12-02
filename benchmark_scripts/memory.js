@@ -13,9 +13,9 @@ async function perfTest(context, commands) {
     await commands.wait.byTime(15 * 1000)
   }
 
+  await commands.wait.byTime(45 * 1000)
   const memory_metrics = await utils.getMemoryMetrics(context)
 
-  await commands.wait.byTime(45 * 1000)
   await commands.measure.start('memory');
   await commands.measure.stop();
   commands.measure.addObject(memory_metrics)
