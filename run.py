@@ -4,14 +4,18 @@ import subprocess
 import sys
 
 BROWSERS = "Chrome,Brave,Edge,Firefox"
+if sys.platform == "darwin":
+  BROWSERS += ",Safari"
 REPEAT = 10
 VERBOSE = True
 
+
 EXECUTABLE = ".venv/bin/python3"
+if not os.path.exists(EXECUTABLE):
+  subprocess.check_call([sys.executable, "install.py"])
 
 platform = sys.platform
 if platform == "darwin":
-  BROWSERS += ",Safari"
   platform = "mac"
 
 os.makedirs('output', exist_ok=True)
