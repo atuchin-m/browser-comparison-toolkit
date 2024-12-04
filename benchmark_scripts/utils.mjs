@@ -1,4 +1,4 @@
-import {command} from 'execa'
+import {execa} from 'execa'
 
 async function waitForThrottled(commands, condition, timeoutSeconds = 15 * 60) {
   for (let i = 0; i < timeoutSeconds; ++i) {
@@ -44,7 +44,7 @@ export async function getMemoryMetrics(context) {
   if (attr.args != null && attr.args[0].startsWith('user-data'))
     cmd += ` "${attr.args[0]}"`
   console.log(cmd)
-  const { stdout } = await command(cmd, { shell: true });
+  const { stdout } = await execa(cmd, { shell: true });
   console.log(stdout)
   return JSON.parse(stdout)
 }
