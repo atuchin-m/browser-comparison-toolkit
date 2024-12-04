@@ -1,7 +1,7 @@
 
 import * as utils from './utils.mjs'
 import fs from 'fs';
-const URLS = fs.readFileSync('./scenarios/one.txt').toString().replace(/\r\n|\r/g, '\n').split("\n");
+const URLS = fs.readFileSync('./scenarios/new-list-v2.txt').toString().replace(/\r\n|\r/g, '\n').split("\n");
 
 export async function test(context, commands) {
   for (const url of URLS) {
@@ -10,7 +10,7 @@ export async function test(context, commands) {
       continue;
 
     await commands.js.run(`window.open('${url}', '_blank')`);
-    await commands.wait.byTime(15 * 1000)
+    await commands.wait.byTime(10 * 1000)
   }
 
   await commands.wait.byTime(45 * 1000)
@@ -20,7 +20,3 @@ export async function test(context, commands) {
   await commands.measure.stop();
   commands.measure.addObject(memory_metrics)
 };
-
-// module.exports = {
-//   test: perfTest
-// };

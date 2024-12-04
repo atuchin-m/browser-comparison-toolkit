@@ -35,4 +35,4 @@ def run_test(cmd, test, output, browsers=BROWSERS, repeat=REPEAT,):
 
 run_test("script", "scenarios/memory.txt", "mem")
 run_test("script", "scenarios/benchmark.txt", "bench")
-run_test("loading", "scenarios/loading.txt", "loading")
+run_test("loading", "scenarios/new-list-v2.txt", "loading")
