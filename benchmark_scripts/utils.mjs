@@ -1,4 +1,4 @@
-const execa = require('execa')
+import {command} from 'execa'
 
 async function waitForThrottled(commands, condition, timeoutSeconds = 15 * 60) {
   for (let i = 0; i < timeoutSeconds; ++i) {
@@ -10,10 +10,10 @@ async function waitForThrottled(commands, condition, timeoutSeconds = 15 * 60) {
   return false
 }
 
-function getBrowserAttr(context) {
+export function getBrowserAttr(context) {
   const options = context.options
-  binaryPath = null
-  args = null
+  let binaryPath = null
+  let args = null
   if (options.safari?.binaryPath) {
     binaryPath = options.safari.binaryPath
     args = options.safari.args
@@ -38,19 +38,13 @@ function getBrowserAttr(context) {
   }
 }
 
-async function getMemoryMetrics(context) {
+export async function getMemoryMetrics(context) {
   const attr = getBrowserAttr(context)
-  // TODO: change python3
   let cmd = `python3 get_memory_metrics.py ${attr.type}`
   if (attr.args != null && attr.args[0].startsWith('user-data'))
     cmd += ` "${attr.args[0]}"`
   console.log(cmd)
-  const { stdout } = await execa.command(cmd, { shell: true });
+  const { stdout } = await command(cmd, { shell: true });
   console.log(stdout)
   return JSON.parse(stdout)
 }
-
-module.exports = {
-  waitForThrottled: waitForThrottled,
-  getMemoryMetrics: getMemoryMetrics,
-};

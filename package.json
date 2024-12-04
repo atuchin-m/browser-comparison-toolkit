@@ -1,0 +1,14 @@
+{
+  "name": "browser-comparison-toolkit",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "dependencies": {
+    "browsertime": "23.4.1",
+    "execa": "9.5.1"
+  }
+}

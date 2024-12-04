@@ -1,4 +1,6 @@
-async function perfTest(context, commands) {
+import * as utils from './utils.mjs'
+
+export async function test(context, commands) {
   await commands.measure.start(
     'https://mozilla.github.io/krakenbenchmark.mozilla.org/index.html');
   await commands.click.bySelectorAndWait('a');
@@ -23,8 +25,4 @@ async function perfTest(context, commands) {
     }
   }
   await commands.screenshot.take('result')
-};
-
-module.exports = {
-  test: perfTest
 };

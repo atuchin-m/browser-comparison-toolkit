@@ -1,4 +1,6 @@
-async function perfTest(context, commands) {
+import * as utils from './utils.mjs'
+
+export async function test(context, commands) {
   await commands.measure.start('https://web.basemark.com/');
   await commands.click.byClassNameAndWait('btn');
 
@@ -13,8 +15,4 @@ async function perfTest(context, commands) {
     }
   }
   await commands.screenshot.take('result')
-};
-
-module.exports = {
-  test: perfTest
 };

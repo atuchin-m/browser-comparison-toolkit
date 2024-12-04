@@ -1,6 +1,6 @@
-const utils = require('./utils.js')
+import * as utils from './utils.mjs'
 
-async function perfTest(context, commands) {
+exort async function test(context, commands) {
   const URL = 'https://www.browserbench.org/Speedometer3.0?startAutomatically=true'
   const getResults = 'document.getElementById("result-number")?.textContent';
 
@@ -27,8 +27,4 @@ async function perfTest(context, commands) {
     });
 
   await commands.screenshot.take('result')
-};
-
-module.exports = {
-  test: perfTest
 };

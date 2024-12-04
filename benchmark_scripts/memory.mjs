@@ -1,10 +1,10 @@
 
-const utils = require('./utils.js')
-const fs = require('fs');
-const URLS = fs.readFileSync('./scenarios/new-list.txt').toString().replace(/\r\n|\r/g, '\n').split("\n");
+import * as utils from './utils.mjs'
+import fs from 'fs';
+const URLS = fs.readFileSync('./scenarios/one.txt').toString().replace(/\r\n|\r/g, '\n').split("\n");
 
-async function perfTest(context, commands) {
-  for (url of URLS) {
+export async function test(context, commands) {
+  for (const url of URLS) {
     if (url == '') break;
     if (url.startsWith('#') || url.startsWith('/'))
       continue;
@@ -21,6 +21,6 @@ async function perfTest(context, commands) {
   commands.measure.addObject(memory_metrics)
 };
 
-module.exports = {
-  test: perfTest
-};
+// module.exports = {
+//   test: perfTest
+// };

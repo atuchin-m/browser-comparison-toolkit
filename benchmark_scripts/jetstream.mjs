@@ -1,6 +1,6 @@
-const utils = require('./utils.js')
+import * as utils from './utils.mjs'
 
-async function perfTest(context, commands) {
+export async function test(context, commands) {
   await commands.measure.start(
     'https://browserbench.org/JetStream2.2/');
 
@@ -14,8 +14,4 @@ async function perfTest(context, commands) {
   console.log('got result =', score)
   commands.measure.addObject({ 'jetstream': parseFloat(score) });
   await commands.screenshot.take('result')
-};
-
-module.exports = {
-  test: perfTest
 };
