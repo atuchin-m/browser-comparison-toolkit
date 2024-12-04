@@ -40,7 +40,10 @@ export function getBrowserAttr(context) {
 
 export async function getMemoryMetrics(context) {
   const attr = getBrowserAttr(context)
-  let cmd = `.venv/bin/python3 get_memory_metrics.py ${attr.type}`
+  let executable = ".venv/bin/python3"
+  if (process.platform == "win32")
+    executable = ".venv\\Scripts\\python.exe"
+  let cmd = `${executable} get_memory_metrics.py ${attr.type}`
   if (attr.args != null && attr.args[0].startsWith('user-data'))
     cmd += ` "${attr.args[0]}"`
   console.log(cmd)

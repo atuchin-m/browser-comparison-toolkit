@@ -11,6 +11,8 @@ VERBOSE = True
 
 
 EXECUTABLE = ".venv/bin/python3"
+if sys.platform == "win32":
+  EXECUTABLE = ".venv\\Scripts\\python.exe"
 if not os.path.exists(EXECUTABLE):
   subprocess.check_call([sys.executable, "install.py"])
 

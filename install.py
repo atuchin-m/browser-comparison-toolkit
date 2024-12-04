@@ -1,6 +1,11 @@
 import subprocess
 import sys
 
-subprocess.check_call(['npm', 'install', 'browsertime', 'execa'])
+EXECUTABLE = ".venv/bin/python3"
+if sys.platform == "win32":
+  EXECUTABLE = ".venv\\Scripts\\python.exe"
+
+npm = "npm.cmd" if sys.platform == "win32" else "npm"
+subprocess.check_call([npm, 'install', 'browsertime', 'execa'])
 subprocess.check_call([sys.executable, "-m", "venv", ".venv"])
-subprocess.check_call([".venv/bin/python3", "-m", "pip", "install", "psutil", "pandas", "matplotlib"])
+subprocess.check_call([EXECUTABLE, "-m", "pip", "install", "psutil", "pandas", "matplotlib"])
