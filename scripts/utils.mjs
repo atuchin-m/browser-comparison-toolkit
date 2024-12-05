@@ -1,5 +1,7 @@
 import {execa} from 'execa'
+import fs from 'fs'
 
+const URL_FILE = './scenarios/new-list-v2.txt'
 export async function waitForThrottled(commands, condition, timeoutSeconds = 15 * 60) {
   for (let i = 0; i < timeoutSeconds; ++i) {
     const result = await commands.js.run(`return (${condition})`)
@@ -8,6 +10,18 @@ export async function waitForThrottled(commands, condition, timeoutSeconds = 15 
     await commands.wait.byTime(1000)
   }
   return false
+}
+
+export function getUrls(context) {
+  const rawUrls = fs.readFileSync(URL_FILE).toString().split("\n");
+  const urls = []
+  for (const url of rawUrls) {
+    if (url.startsWith('#') || url.startsWith('/'))
+      continue;
+    if (url == '') break;
+    urls.push(url)
+  }
+  return urls
 }
 
 export function getBrowserAttr(context) {

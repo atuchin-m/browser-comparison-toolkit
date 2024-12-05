@@ -24,7 +24,7 @@ class ScriptMeasurement(Measurement):
 
     res = run_browsertime(
       browser, self.state.urls_file, result_dir, False, None,
-      1000 if self.state.low_delays_for_testing else 10000,
+      1000 if self.state.low_delays_for_testing else 60 * 1000,
       ['--timeouts.script', str(30 * 60 * 1000)]
     )
 

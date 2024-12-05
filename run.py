@@ -31,6 +31,7 @@ def run_test(cmd, test, output, browsers=BROWSERS, repeat=REPEAT,):
 
 
 run_test("loading", "scenarios/new-list-v2.txt", "loading")
+run_test("script", "scripts/multipage.mjs", "loading-multipage")
 
 run_test("script", "scripts/memory.mjs", "memory")
 

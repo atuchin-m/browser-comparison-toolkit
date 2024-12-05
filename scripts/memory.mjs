@@ -1,14 +1,8 @@
 
 import * as utils from './utils.mjs'
-import fs from 'fs';
-const URLS = fs.readFileSync('./scenarios/new-list-v2.txt').toString().replace(/\r\n|\r/g, '\n').split("\n");
 
 export async function test(context, commands) {
-  for (const url of URLS) {
-    if (url == '') break;
-    if (url.startsWith('#') || url.startsWith('/'))
-      continue;
-
+  for (const url of utils.getUrls(context)) {
     await commands.js.run(`window.open('${url}', '_blank')`);
     await commands.wait.byTime(10 * 1000)
   }
