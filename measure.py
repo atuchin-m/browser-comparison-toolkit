@@ -21,9 +21,9 @@ from components.memory_measurement import MemoryMeasurement
 def get_measure_by_args(args):
   state = MeasurementState()
   state.low_delays_for_testing = args.low_delays_for_testing
-  if not os.path.isfile(args.urls_file):
-    raise RuntimeError(f'File {args.urls_file} not found')
-  state.urls_file = args.urls_file
+  if not os.path.isfile(args.file):
+    raise RuntimeError(f'File {args.file} not found')
+  state.urls_file = args.file
 
   if args.measure == 'memory':
     return MemoryMeasurement(state)
@@ -37,7 +37,7 @@ def main():
   parser = argparse.ArgumentParser()
   parser.add_argument('measure', type=str, choices=['memory', 'loading', 'script'])
   parser.add_argument('browser', type=str)
-  parser.add_argument('urls_file',
+  parser.add_argument('file',
                       type=str,
                       help='A file with URLs or .mjs script to run')
   parser.add_argument('--connectivity_profile', type=str)
@@ -64,7 +64,7 @@ def main():
       header = result_file.read()
 
   measure = get_measure_by_args(args)
-  test_name: str = args.urls_file.name
+  test_name: str = args.file
   repeat: int = args.repeat
 
   browser_classes = get_browser_classes_from_str(args.browser)
