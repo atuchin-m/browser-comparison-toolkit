@@ -1,8 +1,8 @@
 import {execa} from 'execa'
 
-async function waitForThrottled(commands, condition, timeoutSeconds = 15 * 60) {
+export async function waitForThrottled(commands, condition, timeoutSeconds = 15 * 60) {
   for (let i = 0; i < timeoutSeconds; ++i) {
-    result = await commands.js.run(`return (${condition})`)
+    const result = await commands.js.run(`return (${condition})`)
     if (result != null && result != '')
       return result
     await commands.wait.byTime(1000)
