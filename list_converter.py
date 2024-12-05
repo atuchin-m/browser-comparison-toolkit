@@ -16,12 +16,12 @@ requested_urls = []
 
 for json_str in json_objects:
     obj = json.loads(json_str)
-    requested_url = None
+    children_url = None
+    landing_url = obj['landing'].get('finalUrl')
+    requested_urls.append(landing_url)
     if obj['children']:
-        requested_url = obj['children'][0].get('finalUrl')
-    if not requested_url:
-        requested_url = obj['landing'].get('finalUrl')
-    requested_urls.append(requested_url)
+        children_url = obj['children'][0].get('finalUrl')
+        requested_urls.append(children_url)
 
 # Print each URL on a new line without quotes
 for url in requested_urls:
