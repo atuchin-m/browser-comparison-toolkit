@@ -1,3 +1,0 @@
-speedometer3.mjs
-jetstream.mjs
-motionmark.mjs

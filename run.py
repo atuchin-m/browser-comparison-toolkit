@@ -30,6 +30,10 @@ def run_test(cmd, test, output, browsers=BROWSERS, repeat=REPEAT,):
 
 
 
-run_test("script", "scenarios/memory.txt", "mem")
-run_test("script", "scenarios/benchmarks.txt", "bench")
-run_test("loading", "scenarios/new-list-v2.txt", "loading")
+run_test("script", "scripts/memory.mjs", "mem")
+
+run_test("script", "scripts/speedometer3.mjs", "speedometer3")
+run_test("script", "scripts/jetstream.mjs", "jetstream")
+run_test("script", "scripts/motionmark.mjs", "motionmark")
+
+run_test("loading", "scripts/new-list-v2.txt", "loading")

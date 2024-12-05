@@ -19,13 +19,11 @@ class ScriptMeasurement(Measurement):
     browser = browser_class()
     if browser.browsertime_binary is None:
       raise RuntimeError(f'{browser.name()} browsertime binary not found')
-    script = os.path.join('benchmark_scripts', self.state.urls_file)
-    assert os.path.exists(script)
     browser.prepare_profile()
     result_dir = f'browsertime/{browser.name()}/{self.state.urls_file}/{iteration}/'
 
     res = run_browsertime(
-      browser, script, result_dir, False, None,
+      browser, self.state.urls_file, result_dir, False, None,
       1000 if self.state.low_delays_for_testing else 10000,
       ['--timeouts.script', str(30 * 60 * 1000)]
     )
