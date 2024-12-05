@@ -1,6 +1,6 @@
 import * as utils from './utils.mjs'
 
-exort async function test(context, commands) {
+export async function test(context, commands) {
   const URL = 'https://www.browserbench.org/Speedometer3.0?startAutomatically=true'
   const getResults = 'document.getElementById("result-number")?.textContent';
 
