@@ -11,6 +11,7 @@ from typing import List, Optional, Tuple, Type
 from components.browser import Browser
 from components.measurement import Measurement, MeasurementState
 from components.memory_metrics import get_memory_metrics
+from components.utils import read_urls
 
 
 class MemoryMeasurement(Measurement):
@@ -36,11 +37,7 @@ class MemoryMeasurement(Measurement):
       browser.prepare_profile()
       browser.start()
       time.sleep(self.start_delay)
-      for url in self.state.urls:
-        if url.startswith('#') or url.startswith('/'):
-          continue
-        if url == '':
-          break
+      for _, url in read_urls(self.state.urls_file):
         browser.open_url(url)
         time.sleep(self.open_url_delay)
 

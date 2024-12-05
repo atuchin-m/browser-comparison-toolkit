@@ -9,21 +9,16 @@ from urllib.parse import urlparse
 from components.browsertime_utils import run_browsertime
 from components.browser import Browser
 from components.measurement import Measurement
+from components.utils import read_urls
 
 
 class LoadingMeasurement(Measurement):
   def Run(
       self, iteration: int,
       browser_class: Type[Browser]) -> List[Tuple[str, Optional[str], float]]:
-    urls = self.state.urls
     results: List[Tuple[str, Optional[str], float]] = []
 
-    for index, url in enumerate(urls):
-      if url.startswith('#') or url.startswith('/'):
-        continue
-      if url == '':
-        break
-
+    for index, url in read_urls(self.state.urls_file):
       browser = browser_class()
       if browser.browsertime_binary is None:
         continue

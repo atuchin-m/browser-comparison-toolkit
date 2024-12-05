@@ -1,9 +1,7 @@
 import subprocess
 import sys
 
-EXECUTABLE = ".venv/bin/python3"
-if sys.platform == "win32":
-  EXECUTABLE = ".venv\\Scripts\\python.exe"
+from components.utils import EXECUTABLE
 
 npm = "npm.cmd" if sys.platform == "win32" else "npm"
 subprocess.check_call([npm, 'install', 'browsertime', 'execa'])

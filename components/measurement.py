@@ -8,7 +8,7 @@ from typing import List, Optional, Tuple, Type
 from components.browser import Browser
 
 class MeasurementState:
-  urls: List[str]
+  urls_file: str
   low_delays_for_testing = False
 
 
