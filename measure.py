@@ -103,8 +103,10 @@ def main():
           if args.retry_count is not None and attempt <= args.retry_count:
             logging.error('Got error %s, retrying', e)
             final_messages.append(
-              f'{test_name}/{browser_name}/{index} failed')
+              f'{test_name}/{browser_name}/{index} retry {attempt}')
           else:
+            final_messages.append(
+              f'{test_name}/{browser_name}/{index} failed (attempt {attempt})')
             raise
       results.write_csv(header, args.output)
       total_spent = time.time() - global_start_time
