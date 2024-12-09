@@ -23,7 +23,7 @@ class LoadingMeasurement(Measurement):
       if browser.browsertime_binary is None:
         continue
       browser.prepare_profile()
-      domain = urlparse(url).netloc
+      domain = urlparse(url).netloc + urlparse(url).path
       result_dir = f'browsertime/{browser.name()}/{index}_{domain}/{iteration}/'
       res = run_browsertime(
           browser, url, result_dir, False, domain,

@@ -93,7 +93,7 @@ def run_browsertime(browser: Browser, cmd: str, result_dir: str, wait_for_load: 
 
   for item in output_json:
     url = item['info']['url']
-    current_key = key if key is not None else urlparse(url).netloc
+    current_key = key if key is not None else urlparse(url).netloc + urlparse(url).path
     timings = item['statistics']['timings']
     firstPaint = timings['firstPaint']['mean'] if 'firstPaint' in timings else -1
     results.append(('firstPaint', current_key, firstPaint))
