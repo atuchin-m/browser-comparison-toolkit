@@ -20,9 +20,9 @@ if platform == "darwin":
   platform = "mac"
 
 os.makedirs('output', exist_ok=True)
-current_date = datetime.datetime.now().strftime("%m-%d %H-%M")
 
 def run_test(cmd: str, test: str, output: str, browsers: str = BROWSERS, repeat: int = REPEAT):
+  current_date = datetime.datetime.now().strftime("%m-%d %H-%M")
   args = [EXECUTABLE, "./measure.py", cmd, browsers, test,
           f"--repeat={repeat}",
           "--output", f'output/{platform}-{current_date}-{output}.csv']
