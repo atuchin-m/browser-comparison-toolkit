@@ -54,6 +54,44 @@ class ResultMap():
             total.append(0)
           total[i] += current[i]
 
+  def read_csv(self, input_file: str):
+    with open(input_file, 'r', newline='', encoding='utf-8') as result_file:
+      result_reader = csv.reader(result_file, delimiter=',', quotechar='"')
+      shift = 7
+      max_len = 0
+      lines = []
+      for row in result_reader:
+        if result_reader.line_num == 1:
+          continue #skip first line
+        lines.append(row)
+        current_len = len(row) - shift
+        if max_len == 0:
+          max_len = current_len
+        elif current_len > max_len:
+          assert current_len == 2 * max_len
+
+      for row in lines:
+        if row[0].endswith('_Total'):
+          continue
+        s = row[0].split('_', 1)
+        metric = s[0]
+        key = '_'.join(s[1:])
+        browser = row[1]
+        version = row[2]
+        # skip 3,4,5,6 avg, stdev, stdev%, ""
+        raw_values = row[shift:]
+        print(metric, key, browser, version)
+        processed = False
+        for k in [1,2]:
+          if len(raw_values) == max_len * k:
+            processed = True
+            for i, val in enumerate(raw_values):
+              updated_key = key if k == 1 else f'{key}_k{i % 2}'
+              self.addValue(browser, version, metric, updated_key, float(val))
+        if not processed:
+          print(row)
+          raise Exception(f'Invalid number of raw values: {len(raw_values)}')
+
   def write_csv(self, header: Optional[str], output_file: str):
     self.calc_total_metrics()
     with open(output_file, 'w', newline='', encoding='utf-8') as result_file:
