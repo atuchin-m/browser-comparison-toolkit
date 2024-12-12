@@ -7,6 +7,7 @@
 import argparse
 import logging
 import os
+import random
 import time
 from typing import Dict, List
 
@@ -85,7 +86,9 @@ def main():
   global_start_time = time.time()
 
   for index in range(args.repeat):
-    for browser_class in browser_classes:
+    browsers = browser_classes.copy()
+    random.shuffle(browsers)
+    for browser_class in browsers:
       browser_name = browser_class().name()
       version = versions[browser_name]
       logging.info('Testing %d/%s-%s', index, browser_name, version)

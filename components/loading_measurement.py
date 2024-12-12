@@ -3,8 +3,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at https://mozilla.org/MPL/2.0/.
 
+import random
+
 from typing import List, Optional, Tuple, Type
-from urllib.parse import urlparse
+from urllib.parse import urlencode, urlparse
 
 from components.browsertime_utils import run_browsertime
 from components.browser import Browser
@@ -17,8 +19,10 @@ class LoadingMeasurement(Measurement):
       self, iteration: int,
       browser_class: Type[Browser]) -> List[Tuple[str, Optional[str], float]]:
     results: List[Tuple[str, Optional[str], float]] = []
+    urls = read_urls(self.state.urls_file)
+    random.shuffle(urls)
 
-    for index, url in read_urls(self.state.urls_file):
+    for index, url in urls:
       browser = browser_class()
       if browser.browsertime_binary is None:
         continue
