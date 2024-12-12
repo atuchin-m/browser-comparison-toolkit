@@ -1,8 +1,17 @@
 
 import * as utils from './utils.mjs'
 
+function shuffle(a) {
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+}
+
 export async function test(context, commands) {
-  for (const url of utils.getUrls(context)) {
+  const urls = utils.getUrls(context)
+  shuffle(urls)
+  for (const url of urls) {
     await commands.js.run(`window.open('${url}', '_blank')`);
     await commands.wait.byTime(10 * 1000)
   }
