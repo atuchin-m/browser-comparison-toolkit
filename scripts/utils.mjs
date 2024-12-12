@@ -1,7 +1,7 @@
 import {execa} from 'execa'
 import fs from 'fs'
 
-const URL_FILE = './scenarios/new-list-v2.txt'
+const URL_FILE = './scenarios/new-list-v3.txt'
 export async function waitForThrottled(commands, condition, timeoutSeconds = 15 * 60) {
   for (let i = 0; i < timeoutSeconds; ++i) {
     const result = await commands.js.run(`return (${condition})`)
