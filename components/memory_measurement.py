@@ -16,7 +16,7 @@ from components.utils import read_urls
 
 class MemoryMeasurement(Measurement):
   start_delay = 5
-  open_url_delay = 15
+  open_url_delay = 10
   measure_delay = 45
   terminate_delay = 5
 
@@ -37,7 +37,7 @@ class MemoryMeasurement(Measurement):
       browser.prepare_profile()
       browser.start()
       time.sleep(self.start_delay)
-      for _, url in read_urls(self.state.urls_file):
+      for _, url in read_urls(self.state.urls_file, 20):
         browser.open_url(url)
         time.sleep(self.open_url_delay)
 

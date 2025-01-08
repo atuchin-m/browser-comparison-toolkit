@@ -12,15 +12,17 @@ export async function waitForThrottled(commands, condition, timeoutSeconds = 15 
   return false
 }
 
-export function getUrls(context) {
+export function getUrls(context, limit = null) {
   const rawUrls = fs.readFileSync(URL_FILE).toString().split("\n");
-  const urls = []
+  let urls = []
   for (const url of rawUrls) {
     if (url.startsWith('#') || url.startsWith('/'))
       continue;
     if (url == '') break;
     urls.push(url)
   }
+  if (limit != null)
+    urls = urls.slice(0, limit)
   return urls
 }
 

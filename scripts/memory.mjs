@@ -9,7 +9,7 @@ function shuffle(a) {
 }
 
 export async function test(context, commands) {
-  const urls = utils.getUrls(context)
+  const urls = utils.getUrls(context, 20)
   shuffle(urls)
   for (const url of urls) {
     await commands.js.run(`window.open('${url}', '_blank')`);
