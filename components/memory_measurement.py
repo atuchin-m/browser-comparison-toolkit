@@ -4,6 +4,7 @@
 # You can obtain one at https://mozilla.org/MPL/2.0/.
 
 import logging
+import random
 import time
 
 from typing import List, Optional, Tuple, Type
@@ -37,7 +38,9 @@ class MemoryMeasurement(Measurement):
       browser.prepare_profile()
       browser.start()
       time.sleep(self.start_delay)
-      for _, url in read_urls(self.state.urls_file, 20):
+      urls = list(read_urls(self.state.urls_file, 20))
+      random.shuffle(urls)
+      for _, url in urls:
         browser.open_url(url)
         time.sleep(self.open_url_delay)
 
