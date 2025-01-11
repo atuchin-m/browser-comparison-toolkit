@@ -19,7 +19,7 @@ class LoadingMeasurement(Measurement):
       self, iteration: int,
       browser_class: Type[Browser]) -> List[Tuple[str, Optional[str], float]]:
     results: List[Tuple[str, Optional[str], float]] = []
-    urls = read_urls(self.state.urls_file)
+    urls = list(read_urls(self.state.urls_file))
     random.shuffle(urls)
 
     for index, url in urls:
