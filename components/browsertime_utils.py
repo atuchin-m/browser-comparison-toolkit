@@ -30,19 +30,23 @@ def _get_total_transfer_bytes(har: Dict) -> int:
     res = e['response']
     if '_transferSize' in res:
       total_bytes += res['_transferSize']
-    else:
-      if 'bodySize' in res:
-        try:
-          total_bytes += res['bodySize']
-        except:
-          pass
-      if 'headersSize' in res:
-        try:
-          total_bytes += res['headersSize']
-        except:
-          pass
   return total_bytes
 
+def _get_total_bytes(har: Dict) -> int:
+  total_bytes = 0
+  for e in har['log']['entries']:
+    res = e['response']
+    if 'bodySize' in res:
+      try:
+        total_bytes += res['bodySize']
+      except:
+        pass
+    if 'headersSize' in res:
+      try:
+        total_bytes += res['headersSize']
+      except:
+        pass
+  return total_bytes
 
 def run_browsertime(browser: Browser, cmd: str, result_dir: str, wait_for_load: bool,
                     key: Optional[str], startup_delay: int,
@@ -133,5 +137,10 @@ def run_browsertime(browser: Browser, cmd: str, result_dir: str, wait_for_load: 
         else:
           results.append((metric, key, float(value)))
   if har_json:
-    results.append(('totalBytes', key, _get_total_transfer_bytes(har_json)))
+    total_bytes = _get_total_bytes(har_json)
+    if total_bytes != 0:
+      results.append(('totalBytes', key, total_bytes))
+    total_transfer_bytes = _get_total_transfer_bytes(har_json)
+    if total_transfer_bytes != 0:
+      results.append(('totalTransferredBytes', key, total_transfer_bytes))
   return results
