@@ -113,6 +113,8 @@ def main():
             raise
       results.write_csv(header, args.output)
       total_spent = time.time() - global_start_time
+      if run_index == total_runs:
+        results.addValue('None', 'None', 'spend_min', None, total_spent / 60)
       logging.info('### %d / %d spent %.1f min, remaining %.1f min',
                    run_index, total_runs,
                    total_spent / 60,

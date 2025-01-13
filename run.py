@@ -12,8 +12,9 @@ if sys.platform == "darwin":
   BROWSERS += ",Safari"
 REPEAT = 10
 VERBOSE = True
+PREFIX = ""
 
-# BROWSERS = "Chrome"
+# BROWSERS = "Chrome,Brave"
 
 platform = sys.platform
 if platform == "darwin":
@@ -25,7 +26,7 @@ def run_test(cmd: str, test: str, output: str, browsers: str = BROWSERS, repeat:
   current_date = datetime.datetime.now().strftime("%m-%d %H-%M")
   args = [EXECUTABLE, "./measure.py", cmd, browsers, test,
           f"--repeat={repeat}",
-          "--output", f'output/{platform}-{current_date}-{output}.csv']
+          "--output", f'output/{PREFIX}-{platform}-{current_date}-{output}.csv']
   if VERBOSE:
     args.append("--verbose")
   subprocess.run(args)
