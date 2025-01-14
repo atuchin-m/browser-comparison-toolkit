@@ -273,6 +273,8 @@ class Safari(Browser):
     assert is_mac()
     dir = os.path.expanduser('~/Library/Containers/com.apple.Safari/Data/Library/Caches')
     shutil.rmtree(dir, ignore_errors=True)
+    shutil.rmtree(os.path.expanduser('~/Library/Safari/LastSession.plist'), ignore_errors=True)
+    shutil.rmtree(os.path.expanduser('~/Library/Safari/LastTabs.plist'), ignore_errors=True)
 
   def profile_dir(self) -> str:
     if is_mac():
