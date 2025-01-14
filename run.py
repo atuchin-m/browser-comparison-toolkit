@@ -33,7 +33,7 @@ def run_test(cmd: str, test: str, output: str, browsers: str = BROWSERS, repeat:
 
 
 run_test("script", "scripts/memory.mjs", "memory")
-run_test("memory", "scenarios/new-list-v3.txt", "memory-ddg")
+run_test("memory", "scenarios/new-list-v3.txt", "memory-ddg-ff", "DDG,Firefox")
 
 run_test("script", "scripts/multipage.mjs", "loading-multipage", "Brave,Edge,Chrome",5)
 run_test("script", "scripts/multipage.mjs", "loading-multipage", "Safari",5)

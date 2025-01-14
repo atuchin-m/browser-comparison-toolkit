@@ -98,10 +98,14 @@ def get_memory_metrics_for_processes(processes: Set[psutil.Process]) -> List[Tup
   private_bytes: Dict[int, float] = {}
   loop = asyncio.get_event_loop()
 
+  max_concurrent_tasks = 20
+  semaphore = asyncio.Semaphore(max_concurrent_tasks)
+
   async def calc_private_bytes(name: str, pid: int):
-    result = await _get_private_memory_usage(name, pid)
-    if result is not None:
-      private_bytes[pid] = result
+    async with semaphore:
+      result = await _get_private_memory_usage(name, pid)
+      if result is not None:
+        private_bytes[pid] = result
 
   for p in processes:
     tasks.append(loop.create_task(calc_private_bytes(p.name(), p.pid)))
