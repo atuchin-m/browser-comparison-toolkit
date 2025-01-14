@@ -139,8 +139,8 @@ def run_browsertime(browser: Browser, cmd: str, result_dir: str, wait_for_load: 
   if har_json:
     total_bytes = _get_total_bytes(har_json)
     if total_bytes != 0:
-      results.append(('totalBytes', key, total_bytes))
+      results.append(('totalBytes', current_key, total_bytes))
     total_transfer_bytes = _get_total_transfer_bytes(har_json)
     if total_transfer_bytes != 0:
-      results.append(('totalTransferredBytes', key, total_transfer_bytes))
+      results.append(('totalTransferredBytes', current_key, total_transfer_bytes))
   return results
