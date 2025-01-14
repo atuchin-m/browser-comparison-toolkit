@@ -10,6 +10,5 @@ export async function test(context, commands) {
       console.error(e);
     }
     await commands.navigate('about:blank');
-    await commands.wait.byTime(5 * 1000);
   }
 };
