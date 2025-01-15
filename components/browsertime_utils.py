@@ -63,7 +63,7 @@ def run_browsertime(browser: Browser, cmd: str, result_dir: str, wait_for_load: 
            browser.binary()])
   time_to_run = 0
   if not wait_for_load:
-    time_to_run = 15 * 1000
+    time_to_run = 10 * 1000
     args.extend(['--pageCompleteCheck', 'return true'])
     args.extend(['--pageCompleteCheckStartWait', str(time_to_run)])
     args.extend(['--pageLoadStrategy', 'none'])
