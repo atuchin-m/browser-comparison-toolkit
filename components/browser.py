@@ -18,6 +18,13 @@ from typing import Dict, List, Optional, Set, Type
 from components.utils import is_mac, is_win
 
 
+def kill_process(name:str, force: bool):
+  if is_win():
+    subprocess.call(['taskkill'] + (['/F'] if force else []) + ['/IM', name])
+  if is_mac():
+    subprocess.call(['killall'] + (['-9'] if force else []) + [name] )
+
+
 class Browser:
   binary_name: str
   use_user_data_dir: bool = True
@@ -297,23 +304,23 @@ class Safari(Browser):
     else:
       super().open_url(url)
 
+  def terminate(self, timeout):
+    super().terminate(timeout)
+    kill_process('Safari', True)
+
 class Firefox(Browser):
   binary_name = 'Firefox'
   use_user_data_dir = False
   browsertime_binary = 'firefox'
   extra_processes = ['firefox', 'Firefox', 'plugin-container']
 
-  def kill(self, force: bool):
-    if is_win():
-      subprocess.call(['taskkill'] + (['/F'] if force else []) + ['/IM', 'firefox.exe'])
-    if is_mac():
-      subprocess.call(['killall'] + (['-9'] if force else []) + ['Firefox'] )
 
   def terminate(self):
-    self.kill(False)
+    name = 'Firefox' if is_mac() else 'firefox'
+    kill_process(name, False)
     time.sleep(2)
     super().terminate()
-    self.kill(True)
+    kill_process(name, True)
 
   def prepare_profile(self):
     cache_dir = None
