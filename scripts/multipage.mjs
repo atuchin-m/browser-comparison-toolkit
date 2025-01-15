@@ -11,6 +11,8 @@ export async function test(context, commands) {
       await commands.wait.byTime(2 * 1000);
     } catch (e) {
       console.error(`Failed to load ${url} due to error:`, e);
+      // A workaround for empty response in HAR file:
+      await commands.navigate('https://example.com');
       error = true
     }
     await commands.measure.stop();
