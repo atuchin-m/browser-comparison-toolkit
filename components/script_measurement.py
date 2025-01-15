@@ -22,10 +22,14 @@ class ScriptMeasurement(Measurement):
     browser.prepare_profile()
     result_dir = f'browsertime/{browser.name()}/{self.state.urls_file}/{iteration}/'
 
-    res = run_browsertime(
-      browser, self.state.urls_file, result_dir, False, None,
-      1000 if self.state.low_delays_for_testing else 10 * 1000,
-      ['--timeouts.script', str(30 * 60 * 1000)]
-    )
+    try:
+      res = run_browsertime(
+        browser, self.state.urls_file, result_dir, False, None,
+        1000 if self.state.low_delays_for_testing else 10 * 1000,
+        ['--timeouts.script', str(30 * 60 * 1000)]
+      )
+    except Exception as e:
+      browser.terminate()
+      raise e
 
     return res
