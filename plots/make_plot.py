@@ -102,7 +102,9 @@ for _, data in by_metric:
     metric += f'\n({extra_title})'
   plt.title(metric)
   for name, group in grouped:
-    assert group.shape[0] == 1
+    if group.shape[0] != 1:
+      print(group)
+      assert False
     browser = group.iat[0, 1]
     version = group.iat[0, 2]
     avg = group.iat[0, 3] / scale
