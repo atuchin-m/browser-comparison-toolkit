@@ -16,7 +16,6 @@ https://pinterest.com
 https://britannica.com
 https://merriam-webster.com
 https://microsoft.com
-https://ebay.com
 https://yahoo.com
 https://tripadvisor.com
 https://walmart.com
@@ -43,7 +42,6 @@ https://usnews.com
 https://stackexchange.com
 https://cnbc.com
 https://theguardian.com
-https://espn.com
 https://zillow.com
 https://sciencedirect.com
 https://en.wikipedia.org/wiki/Xysticus_cristatus
