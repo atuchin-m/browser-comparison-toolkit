@@ -61,9 +61,9 @@ def get_by_xpath(dict: Optional[Dict], xpath: List[str]):
 
 def get_by_xpath_float(dict: Optional[Dict], xpath: List[str]) -> Optional[float]:
   value = get_by_xpath(dict, xpath)
-  if value is None or not isinstance(value, str):
-    return None
-  return float(value)
+  if isinstance(value, float) or isinstance(value, int):
+    return float(value)
+  return None
 
 def run_browsertime(browser: Browser, cmd: str, result_dir: str, wait_for_load: bool,
                     global_key: Optional[str], startup_delay: int,
@@ -129,15 +129,15 @@ def run_browsertime(browser: Browser, cmd: str, result_dir: str, wait_for_load: 
         key = None
     timings = get_by_xpath(item, ['statistics', 'timings'])
     results.append(('firstPaint', key,
-                    get_by_xpath_float(timings, ['firstPaint', 'median']) or max_time))
-    results.append(('largestContentfulPaint', key,
-                    get_by_xpath_float(timings, ['largestContentfulPaint', 'renderTime', 'median']) or max_time))
+                    get_by_xpath_float(timings, ['paintTiming', 'first-paint', 'median']) or -1))
+    results.append(('firstContentfulPaint', key,
+                    get_by_xpath_float(timings, ['paintTiming', 'first-contentful-paint', 'median']) or -1))
     results.append(('domContentLoadedTime', key,
                     get_by_xpath_float(timings, ['pageTimings', 'domContentLoadedTime', 'median']) or max_time))
     results.append(('pageLoadTime', key,
                     get_by_xpath_float(timings, ['pageTimings', 'pageLoadTime', 'median']) or max_time))
-    results.append(('ttfb', key,
-                    get_by_xpath_float(timings, ['ttfb', 'median']) or max_time))
+    results.append(('serverResponseTime', key,
+                    get_by_xpath_float(timings, ['pageTimings', 'serverResponseTime', 'median']) or -1))
 
     for extra in item['extras']:
       for metric, value in extra.items():
