@@ -6,7 +6,6 @@ export async function test(context, commands) {
   for (const [index, url] of utils.getUrls(context).entries()) {
     const key = new URL(url).hostname + '_' +  index;
     try {
-      await commands.cache.clear();
       await commands.measure.start(url, key);
     } catch (e) {
       await commands.measure.start(key);
