@@ -78,7 +78,7 @@ def run_browsertime(browser: Browser, cmd: str, result_dir: str, wait_for_load: 
           ['--viewPort', 'maximize'] +
           [f'--{browser.browsertime_binary}.binaryPath',
            browser.binary()])
-  initial_wait = 1500 # initial wait before checking page complete
+  initial_wait = 3000 # initial wait before checking page complete
   max_additional_wait = 13500 # max wait after initial wait, then consider page complete
   if not wait_for_load:
     args.extend(['--pageCompleteCheck',
@@ -88,8 +88,8 @@ def run_browsertime(browser: Browser, cmd: str, result_dir: str, wait_for_load: 
                 'return document.readyState === "complete";})()'])
     args.extend(['--pageCompleteCheckStartWait', str(initial_wait)])
     args.extend(['--pageCompleteCheckPollTimeout', str(200)])
-    args.extend(['--pageLoadStrategy', 'none'])
-    args.extend(['--maxLoadTime', '30000'])
+    args.extend(['--pageLoadStrategy', 'eager'])
+    args.extend(['--timeouts.pageCompleteCheck', '30000'])
 
   args.extend(extra_args)
   args.extend(['--timeToSettle', str(startup_delay)])
