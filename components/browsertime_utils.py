@@ -95,6 +95,18 @@ def run_browsertime(browser: Browser, cmd: str, result_dir: str, wait_for_load: 
   except FileNotFoundError:
     pass
 
+  def get_by_xpath(dict: Optional[Dict], xpath: List[str]):
+    if dict is None:
+      return None
+    if len(xpath) == 0:
+      return dict
+    key = xpath[0]
+    if key in dict:
+      return get_by_xpath(dict[key], xpath[1:])
+    return None
+
+  max_time = float(15 * 1000)
+
   for item in output_json:
     if key is None:
       key = item['info']['alias']
@@ -102,36 +114,17 @@ def run_browsertime(browser: Browser, cmd: str, result_dir: str, wait_for_load: 
         raise RuntimeError('alias must be set in commands.measure.start(url, alias) ' + cmd)
       if key == 'None':
         key = None
-    timings = item['statistics']['timings']
-    firstPaint = timings['firstPaint']['mean'] if 'firstPaint' in timings else -1
-    results.append(('firstPaint', key, firstPaint))
-
-    largestContentfulPaint = (
-      timings['largestContentfulPaint']['renderTime']['mean']
-      if 'largestContentfulPaint' in timings else -1
-    )
+    timings = get_by_xpath(item, ['statistics', 'timings'])
+    results.append(('firstPaint', key,
+                    get_by_xpath(timings, ['firstPaint', 'median']) or max_time))
     results.append(('largestContentfulPaint', key,
-                    largestContentfulPaint))
-
-    pageTimings = timings.get('pageTimings')
-
-    dcl = (
-      pageTimings['domContentLoadedTime']['mean']
-      if pageTimings is not None and 'domContentLoadedTime' in pageTimings
-      else -1
-    )
-
-    if dcl == 0:
-      dcl = time_to_run
-    results.append(('domContentLoadedTime', key, dcl))
-
-    pageLoadTime = (
-      pageTimings['pageLoadTime']['mean']
-      if pageTimings is not None and 'pageLoadTime' in pageTimings else -1
-    )
-    if pageLoadTime == 0:
-      pageLoadTime = time_to_run
-    results.append(('pageLoadTime', key, pageLoadTime))
+                    get_by_xpath(timings, ['largestContentfulPaint', 'renderTime', 'median']) or max_time))
+    results.append(('domContentLoadedTime', key,
+                    get_by_xpath(timings, ['pageTimings', 'domContentLoadedTime', 'median']) or max_time))
+    results.append(('pageLoadTime', key,
+                    get_by_xpath(timings, ['pageTimings', 'pageLoadTime', 'median']) or max_time))
+    results.append(('ttfb', key,
+                    get_by_xpath(timings, ['ttfb', 'median']) or max_time))
 
     for extra in item['extras']:
       for metric, value in extra.items():
