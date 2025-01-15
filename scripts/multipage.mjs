@@ -2,13 +2,16 @@
 import * as utils from './utils.mjs'
 
 export async function test(context, commands) {
-  await commands.wait.byTime(30 * 1000);
-  for (const url of utils.getUrls(context)) {
+  await commands.wait.byTime(3 * 1000);
+  for (const [index, url] of utils.getUrls(context).entries()) {
+    const key = new URL(url).hostname + '_' +  index;
     try {
-      await commands.measure.start(url);
+      await commands.cache.clear();
+      await commands.measure.start(url, key);
     } catch (e) {
       console.error(e);
     }
-    await commands.navigate('about:blank');
+    await commands.js.run("document.location.href = 'about:blank'");
+    await commands.wait.byTime(1 * 1000);
   }
 };

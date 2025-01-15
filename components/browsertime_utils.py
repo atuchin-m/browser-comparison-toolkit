@@ -96,17 +96,21 @@ def run_browsertime(browser: Browser, cmd: str, result_dir: str, wait_for_load: 
     pass
 
   for item in output_json:
-    url = item['info']['url']
-    current_key = key if key is not None else urlparse(url).netloc + urlparse(url).path
+    if key is None:
+      key = item['info']['alias']
+      if key is None:
+        raise RuntimeError('alias must be set in commands.measure.start(url, alias) ' + cmd)
+      if key == 'None':
+        key = None
     timings = item['statistics']['timings']
     firstPaint = timings['firstPaint']['mean'] if 'firstPaint' in timings else -1
-    results.append(('firstPaint', current_key, firstPaint))
+    results.append(('firstPaint', key, firstPaint))
 
     largestContentfulPaint = (
       timings['largestContentfulPaint']['renderTime']['mean']
       if 'largestContentfulPaint' in timings else -1
     )
-    results.append(('largestContentfulPaint', current_key,
+    results.append(('largestContentfulPaint', key,
                     largestContentfulPaint))
 
     pageTimings = timings.get('pageTimings')
@@ -119,7 +123,7 @@ def run_browsertime(browser: Browser, cmd: str, result_dir: str, wait_for_load: 
 
     if dcl == 0:
       dcl = time_to_run
-    results.append(('domContentLoadedTime', current_key, dcl))
+    results.append(('domContentLoadedTime', key, dcl))
 
     pageLoadTime = (
       pageTimings['pageLoadTime']['mean']
@@ -127,7 +131,7 @@ def run_browsertime(browser: Browser, cmd: str, result_dir: str, wait_for_load: 
     )
     if pageLoadTime == 0:
       pageLoadTime = time_to_run
-    results.append(('pageLoadTime', current_key, pageLoadTime))
+    results.append(('pageLoadTime', key, pageLoadTime))
 
     for extra in item['extras']:
       for metric, value in extra.items():
@@ -139,8 +143,8 @@ def run_browsertime(browser: Browser, cmd: str, result_dir: str, wait_for_load: 
   if har_json:
     total_bytes = _get_total_bytes(har_json)
     if total_bytes != 0:
-      results.append(('totalBytes', current_key, total_bytes))
+      results.append(('totalBytes', key, total_bytes))
     total_transfer_bytes = _get_total_transfer_bytes(har_json)
     if total_transfer_bytes != 0:
-      results.append(('totalTransferredBytes', current_key, total_transfer_bytes))
+      results.append(('totalTransferredBytes', key, total_transfer_bytes))
   return results

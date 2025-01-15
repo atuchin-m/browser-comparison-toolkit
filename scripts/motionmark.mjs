@@ -2,7 +2,7 @@ import * as utils from './utils.mjs'
 
 export async function test(context, commands) {
   await commands.measure.start(
-    'https://browserbench.org/MotionMark1.3');
+    'https://browserbench.org/MotionMark1.3', 'None');
 
   await commands.wait.byXpath('//button[text()="Run Benchmark"]', 2 * 60 * 1000)
   await commands.click.byIdAndWait('start-button');

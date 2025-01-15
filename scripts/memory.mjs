@@ -13,13 +13,13 @@ export async function test(context, commands) {
   shuffle(urls)
   for (const url of urls) {
     await commands.js.run(`window.open('${url}', '_blank')`);
-    await commands.wait.byTime(10 * 1000)
+    await commands.wait.byTime(2 * 1000)
   }
 
   await commands.wait.byTime(45 * 1000)
   const memory_metrics = await utils.getMemoryMetrics(context)
 
-  await commands.measure.start('memory');
+  await commands.measure.start('None');
   await commands.measure.stop();
   commands.measure.addObject(memory_metrics)
 };

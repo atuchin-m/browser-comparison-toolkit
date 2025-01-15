@@ -8,7 +8,7 @@ export async function test(context, commands) {
   await commands.navigate(`${URL}&iterationCount=1`);
   await utils.waitForThrottled(commands, getResults, 3 * 60);
 
-  await commands.measure.start(`${URL}&iterationCount=10`);
+  await commands.measure.start(`${URL}&iterationCount=10`, 'None');
 
   const value = await utils.waitForThrottled(commands, getResults, 10 * 60);
   const error = await commands.js.run(

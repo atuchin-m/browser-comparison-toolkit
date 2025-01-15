@@ -2,7 +2,7 @@ import * as utils from './utils.mjs'
 
 export async function test(context, commands) {
   await commands.measure.start(
-    'https://browserbench.org/JetStream2.2/');
+    'https://browserbench.org/JetStream2.2/', 'None');
 
   await commands.wait.byXpath('//a[text()="Start Test"]', 2 * 60 * 1000)
   await commands.js.run('JetStream.start()');

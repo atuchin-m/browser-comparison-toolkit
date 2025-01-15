@@ -2,7 +2,7 @@ import * as utils from './utils.mjs'
 
 export async function test(context, commands) {
   await commands.measure.start(
-    'https://mozilla.github.io/krakenbenchmark.mozilla.org/index.html');
+    'https://mozilla.github.io/krakenbenchmark.mozilla.org/index.html', 'None');
   await commands.click.bySelectorAndWait('a');
 
   while (true) {

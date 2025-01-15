@@ -9,7 +9,7 @@ export async function test(context, commands) {
   await commands.js.run('startTest()');
   await utils.waitForThrottled(commands, getResults);
 
-  await commands.measure.start(`${URL}?iterationCount=100'`);
+  await commands.measure.start(`${URL}?iterationCount=100'`, 'None');
   await commands.js.run('startTest()');
 
   const value = await utils.waitForThrottled(commands, getResults);
