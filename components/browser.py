@@ -145,6 +145,8 @@ class Browser:
           time.sleep(2)
         finally:
           pass
+      else:
+        self.process = None
 
     try:
       if self.temp_user_data_dir is not None:
@@ -301,13 +303,17 @@ class Firefox(Browser):
   browsertime_binary = 'firefox'
   extra_processes = ['firefox', 'Firefox', 'plugin-container']
 
-  def terminate(self):
+  def kill(self, force: bool):
     if is_win():
-      subprocess.call(['taskkill', '/IM', 'firefox.exe'])
+      subprocess.call(['taskkill', '/IM', 'firefox.exe'] + ['-9'] if force else [])
     if is_mac():
-      subprocess.call(['killall', 'firefox'])
-      time.sleep(2)
+      subprocess.call(['killall', 'Firefox'] + ['-9'] if force else [])
+
+  def terminate(self):
+    self.kill(False)
+    time.sleep(2)
     super().terminate()
+    self.kill(True)
 
   def prepare_profile(self):
     cache_dir = None

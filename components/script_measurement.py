@@ -32,4 +32,5 @@ class ScriptMeasurement(Measurement):
       browser.terminate()
       raise e
 
+    browser.terminate()
     return res
