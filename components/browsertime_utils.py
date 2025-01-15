@@ -87,8 +87,9 @@ def run_browsertime(browser: Browser, cmd: str, result_dir: str, wait_for_load: 
                 f'if (Date.now() - window.__startTime >= {max_additional_wait}) return true;'
                 'return document.readyState === "complete";})()'])
     args.extend(['--pageCompleteCheckStartWait', str(initial_wait)])
-    args.extend(['--pageCompleteWaitTime', '30000'])
+    args.extend(['--pageCompleteCheckPollTimeout', str(200)])
     args.extend(['--pageLoadStrategy', 'none'])
+    args.extend(['--maxLoadTime', '30000'])
 
   args.extend(extra_args)
   args.extend(['--timeToSettle', str(startup_delay)])
