@@ -8,6 +8,7 @@ export async function test(context, commands) {
     try {
       await commands.measure.start(key);
       await commands.navigate(url);
+      await commands.wait.byTime(2 * 1000);
     } catch (e) {
       console.error(`Failed to load ${url} due to error:`, e);
       error = true
