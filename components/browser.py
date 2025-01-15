@@ -305,9 +305,9 @@ class Firefox(Browser):
 
   def kill(self, force: bool):
     if is_win():
-      subprocess.call(['taskkill', '/IM', 'firefox.exe'] + ['-9'] if force else [])
+      subprocess.call(['taskkill'] + (['/F'] if force else []) + ['/IM', 'firefox.exe'])
     if is_mac():
-      subprocess.call(['killall', 'Firefox'] + ['-9'] if force else [])
+      subprocess.call(['killall'] + (['-9'] if force else []) + ['Firefox'] )
 
   def terminate(self):
     self.kill(False)
