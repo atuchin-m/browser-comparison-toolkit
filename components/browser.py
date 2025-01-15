@@ -316,7 +316,7 @@ class Firefox(Browser):
 
 
   def terminate(self):
-    name = 'Firefox' if is_mac() else 'firefox'
+    name = 'Firefox' if is_mac() else 'firefox.exe'
     kill_process(name, False)
     time.sleep(2)
     super().terminate()
