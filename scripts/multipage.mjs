@@ -9,9 +9,13 @@ export async function test(context, commands) {
       await commands.cache.clear();
       await commands.measure.start(url, key);
     } catch (e) {
+      await commands.measure.start(key);
+      commands.measure.addObject({
+        'error': key
+      });
+      await commands.measure.stop();
       console.error(e);
     }
-    await commands.js.run("document.location.href = 'about:blank'");
-    await commands.wait.byTime(1 * 1000);
+    await commands.navigate('about:blank');
   }
 };

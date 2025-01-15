@@ -48,8 +48,25 @@ def _get_total_bytes(har: Dict) -> int:
         pass
   return total_bytes
 
+
+def get_by_xpath(dict: Optional[Dict], xpath: List[str]):
+  if dict is None:
+    return None
+  if len(xpath) == 0:
+    return dict
+  key = xpath[0]
+  if key in dict:
+    return get_by_xpath(dict[key], xpath[1:])
+  return None
+
+def get_by_xpath_float(dict: Optional[Dict], xpath: List[str]) -> Optional[float]:
+  value = get_by_xpath(dict, xpath)
+  if value is None or not isinstance(value, str):
+    return None
+  return float(value)
+
 def run_browsertime(browser: Browser, cmd: str, result_dir: str, wait_for_load: bool,
-                    key: Optional[str], startup_delay: int,
+                    global_key: Optional[str], startup_delay: int,
                     extra_args: List[str]) -> List[Tuple[str, Optional[str], float]]:
   assert browser.browsertime_binary is not None
 
@@ -61,11 +78,16 @@ def run_browsertime(browser: Browser, cmd: str, result_dir: str, wait_for_load: 
           ['--viewPort', 'maximize'] +
           [f'--{browser.browsertime_binary}.binaryPath',
            browser.binary()])
-  time_to_run = 0
+  initial_wait = 3000 # initial wait before checking page complete
+  max_additional_wait = 10000 # max wait after initial wait, then consider page complete
   if not wait_for_load:
-    time_to_run = 10 * 1000
-    args.extend(['--pageCompleteCheck', 'return true'])
-    args.extend(['--pageCompleteCheckStartWait', str(time_to_run)])
+    args.extend(['--pageCompleteCheck',
+                'return (function() {'
+                'if (!window.__startTime) window.__startTime = Date.now();'
+                f'if (Date.now() - window.__startTime >= {max_additional_wait}) return true;'
+                'return document.readyState === "complete";})()'])
+    args.extend(['--pageCompleteCheckStartWait', str(initial_wait)])
+    args.extend(['--pageCompleteWaitTime', '30000'])
     args.extend(['--pageLoadStrategy', 'none'])
 
   args.extend(extra_args)
@@ -95,19 +117,10 @@ def run_browsertime(browser: Browser, cmd: str, result_dir: str, wait_for_load: 
   except FileNotFoundError:
     pass
 
-  def get_by_xpath(dict: Optional[Dict], xpath: List[str]):
-    if dict is None:
-      return None
-    if len(xpath) == 0:
-      return dict
-    key = xpath[0]
-    if key in dict:
-      return get_by_xpath(dict[key], xpath[1:])
-    return None
-
-  max_time = float(15 * 1000)
+  max_time = float(initial_wait + max_additional_wait)
 
   for item in output_json:
+    key = global_key
     if key is None:
       key = item['info']['alias']
       if key is None:
@@ -116,15 +129,15 @@ def run_browsertime(browser: Browser, cmd: str, result_dir: str, wait_for_load: 
         key = None
     timings = get_by_xpath(item, ['statistics', 'timings'])
     results.append(('firstPaint', key,
-                    get_by_xpath(timings, ['firstPaint', 'median']) or max_time))
+                    get_by_xpath_float(timings, ['firstPaint', 'median']) or max_time))
     results.append(('largestContentfulPaint', key,
-                    get_by_xpath(timings, ['largestContentfulPaint', 'renderTime', 'median']) or max_time))
+                    get_by_xpath_float(timings, ['largestContentfulPaint', 'renderTime', 'median']) or max_time))
     results.append(('domContentLoadedTime', key,
-                    get_by_xpath(timings, ['pageTimings', 'domContentLoadedTime', 'median']) or max_time))
+                    get_by_xpath_float(timings, ['pageTimings', 'domContentLoadedTime', 'median']) or max_time))
     results.append(('pageLoadTime', key,
-                    get_by_xpath(timings, ['pageTimings', 'pageLoadTime', 'median']) or max_time))
+                    get_by_xpath_float(timings, ['pageTimings', 'pageLoadTime', 'median']) or max_time))
     results.append(('ttfb', key,
-                    get_by_xpath(timings, ['ttfb', 'median']) or max_time))
+                    get_by_xpath_float(timings, ['ttfb', 'median']) or max_time))
 
     for extra in item['extras']:
       for metric, value in extra.items():
