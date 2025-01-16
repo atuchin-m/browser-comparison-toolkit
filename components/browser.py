@@ -304,7 +304,7 @@ class Safari(Browser):
     else:
       super().open_url(url)
 
-  def terminate(self, timeout):
+  def terminate(self, timeout = 20):
     super().terminate(timeout)
     kill_process('Safari', True)
 
