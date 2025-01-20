@@ -4,7 +4,7 @@ export async function test(context, commands) {
   await commands.measure.start(
     'https://browserbench.org/JetStream2.2/', 'None');
 
-  await commands.wait.byXpath('//a[text()="Start Test"]', 2 * 60 * 1000)
+  await commands.wait.byXpath('//a[text()="Start Test"]', 5 * 60 * 1000)
   await commands.js.run('JetStream.start()');
 
   const score = await utils.waitForThrottled(commands,
