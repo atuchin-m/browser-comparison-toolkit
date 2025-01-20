@@ -12,7 +12,7 @@ if sys.platform == "darwin":
   BROWSERS += ",Safari"
 REPEAT = 10
 VERBOSE = True
-PREFIX = "v2"
+PREFIX = "v3-"
 
 platform = sys.platform
 if platform == "darwin":
@@ -30,15 +30,14 @@ def run_test(cmd: str, test: str, output: str, browsers: str = BROWSERS, repeat:
   subprocess.run(args)
 
 
-
-run_test("script", "scripts/multipage.mjs", "loading-multipage", "Brave,Edge,Chrome", 5)
-if platform == "mac":
-  run_test("script", "scripts/multipage.mjs", "loading-multipage", "Safari", 5)
-run_test("script", "scripts/multipage.mjs", "loading-multipage", "Firefox", 5)
-
 run_test("script", "scripts/memory.mjs", "memory")
 run_test("memory", "scenarios/new-list-v3.txt", "memory-ddg-ff", "DDG,Firefox")
 
 run_test("script", "scripts/speedometer3.mjs", "bench-speedometer3")
 run_test("script", "scripts/jetstream.mjs", "bench-jetstream")
 run_test("script", "scripts/motionmark.mjs", "bench-motionmark")
+
+run_test("script", "scripts/multipage.mjs", "loading-multipage", "Brave,Edge,Chrome")
+if platform == "mac":
+  run_test("script", "scripts/multipage.mjs", "loading-multipage", "Safari")
+run_test("script", "scripts/multipage.mjs", "loading-multipage", "Firefox")
